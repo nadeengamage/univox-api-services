@@ -119,5 +119,5 @@ ENV/
 env.bak/
 venv.bak/
 pip-selfcheck.json
-
+*.lock
 # End of https://www.gitignore.io/api/venv,pycharm+all
