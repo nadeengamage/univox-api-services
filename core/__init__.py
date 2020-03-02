@@ -9,5 +9,6 @@
 
 # Bootstrap configurations.
 def bootstrap():
+    # Load routes
     from api import routes
     pass

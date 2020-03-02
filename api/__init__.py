@@ -6,6 +6,8 @@
 
     Description - Create an application.
 """
+
+import os
 from flask import Flask, Response
 
 # Override response format
@@ -30,4 +32,9 @@ class Flask(Flask):
 
 def create_app():
     app = Flask(__name__)
+
+    # Database
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
+
     return app
