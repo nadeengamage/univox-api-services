@@ -24,6 +24,9 @@ ma = Marshmallow(app)
 # Load configuration
 bootstrap()
 
+# Initialize the configurations
+db.init_app(app)
+ma.init_app(app)
 
 # Main configurations
 if __name__ == "__main__":
