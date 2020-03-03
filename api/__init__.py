@@ -9,7 +9,7 @@
 
 import os
 from flask import Flask, Response
-from core.Middleware import Middleware
+from core.middleware import Middleware
 
 # Override response format
 class Response(Response):
@@ -33,6 +33,9 @@ def create_app():
 
     # Middleware
     app.wsgi_app = Middleware(app.wsgi_app, prefix='/api/v1')
+
+    # Authentication 
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
     # Database
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')

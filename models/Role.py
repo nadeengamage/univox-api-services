@@ -7,7 +7,7 @@
     Description - Application user roles.
 """
 
-from app import app, db, ma
+from app import app, db
 
 class Role(db.Model):
     __tablename__ = 'roles'
