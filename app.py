@@ -12,6 +12,7 @@ from api import create_app
 from core import bootstrap
 from flask_sqlalchemy import SQLAlchemy 
 from flask_marshmallow import Marshmallow 
+from flask_jwt import JWT
 
 # Initialize the application
 app = create_app()
@@ -22,11 +23,14 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 # Load configuration
-bootstrap()
+bootstrap(app, db)
 
 # Initialize the configurations
 db.init_app(app)
 ma.init_app(app)
+
+from services.auth import authenticate, identity
+JWT(app, authenticate, identity)
 
 # Main configurations
 if __name__ == "__main__":

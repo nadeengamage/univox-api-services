@@ -8,7 +8,13 @@
 """
 
 # Bootstrap configurations.
-def bootstrap():
+def bootstrap(app, db):
     # Load routes
     from api import routes
+
+    # Database
+    from models import __all__
+    
+    db.create_all()
+    db.session.commit()
     pass
