@@ -111,7 +111,6 @@ modules.xml
 __pycache__/
 .Python
 pyvenv.cfg
-.env
 .venv
 env/
 venv/
