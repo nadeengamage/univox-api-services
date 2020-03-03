@@ -23,7 +23,3 @@ class Role(db.Model):
         self.role_code = role_code
         self.role_name = role_name
         pass
-
-class RoleSchema(ma.Schema):
-  class Meta:
-    fields = ('id', 'role_code', 'role_name')
