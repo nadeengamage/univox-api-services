@@ -9,6 +9,7 @@
 
 import os
 from flask import Flask, Response
+from core.Middleware import Middleware
 
 # Override response format
 class Response(Response):
@@ -17,9 +18,6 @@ class Response(Response):
     default_mimetype = 'application/json'
 
     def __init__(self, response, **kwargs):
-        if 'mimetype' not in kwargs and 'contenttype' not in kwargs:
-            if response.startswith('<?xml'):
-                kwargs['mimetype'] = 'application/json'
         return super(Response, self).__init__(response, **kwargs)
 
     @classmethod
@@ -32,6 +30,9 @@ class Flask(Flask):
 
 def create_app():
     app = Flask(__name__)
+
+    # Middleware
+    app.wsgi_app = Middleware(app.wsgi_app, prefix='/api/v1')
 
     # Database
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')

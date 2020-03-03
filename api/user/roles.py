@@ -19,4 +19,4 @@ roles_schema = RoleSchema(many=True)
 @app.route('/roles')
 def get_roles():
     users = Role.query.all()
-    return {'data': roles_schema.dump(users)}
+    return {'data': roles_schema.dump(users)}, 200
