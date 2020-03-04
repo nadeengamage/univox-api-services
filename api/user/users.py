@@ -82,4 +82,23 @@ def update_user(x_id):
         
 
     return jsonify({'message' : 'User updated!'}), 200
-    
+
+# delete user
+@app.route('/users/<x_id>', methods=['DELETE'])
+def delete_user(x_id):
+    user = User.query.filter_by(x_id=x_id).first()
+    if not user: 
+        return {'message': 'Data not found!'}, 200 
+    else:
+        payload = request.get_json()
+        try:
+            user.status = payload['status']
+
+            db.session.add(user)
+            db.session.commit()
+        except exc.IntegrityError:
+            db.session().rollback()
+            return jsonify({'error' : 'Something error!'}), 400
+            pass
+
+    return jsonify({'message' : 'User deleted!'}), 200
