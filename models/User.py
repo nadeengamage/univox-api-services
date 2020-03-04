@@ -16,8 +16,13 @@ class User(db.Model):
     x_id = db.Column(db.String(50), unique=True)
     username = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(80))
+    firstname = db.Column(db.String(100))
+    lastname = db.Column(db.String(100))
     role = db.Column(db.Integer)
+    status = db.Column(db.Boolean)
+    created_by = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_by = db.Column(db.String(50))
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
     
     def __init__(self, x_id, username):

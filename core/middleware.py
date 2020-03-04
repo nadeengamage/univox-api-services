@@ -21,3 +21,4 @@ class Middleware(object):
         else:
             start_response('404', [('Content-Type', 'application/json')])
             return ["This url does not belong to the app.".encode()]
+            
