@@ -20,7 +20,9 @@ class User(db.Model):
     lastname = db.Column(db.String(100))
     role = db.Column(db.Integer)
     status = db.Column(db.Boolean)
+    created_by = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_by = db.Column(db.String(50))
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
     
     def __init(self, x_id, username):

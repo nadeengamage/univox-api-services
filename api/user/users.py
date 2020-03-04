@@ -11,6 +11,7 @@ from app import app, db
 from flask import jsonify, request
 from models.User import User
 from schemas.UserSchema import UserSchema, extractor
+from services.auth import get_auth_user
 from flask_jwt import JWT, jwt_required, current_identity
 from sqlalchemy import exc
 import uuid
@@ -20,12 +21,14 @@ users_schema = UserSchema(many=True)
 
 # get all roles
 @app.route('/users', methods=['GET'])
+@jwt_required()
 def get_all_users():
     users = User.query.filter_by(status=1).all()
     return {'data': users_schema.dump(users)}, 200
 
 # get by id
 @app.route('/users/<x_id>', methods=['GET'])
+@jwt_required()
 def get_user_by_x_id(x_id):
     user = User.query.filter_by(x_id=x_id).first()
 
@@ -36,6 +39,7 @@ def get_user_by_x_id(x_id):
 
 # create an user
 @app.route('/users', methods=['POST'])
+@jwt_required()
 def create_user():
     try:
         payload = request.get_json()
@@ -57,6 +61,7 @@ def create_user():
 
 # update an user
 @app.route('/users/<x_id>', methods=['PUT'])
+@jwt_required()
 def update_user(x_id):
     user = User.query.filter_by(x_id=x_id).first()
     
@@ -85,6 +90,7 @@ def update_user(x_id):
 
 # delete user
 @app.route('/users/<x_id>', methods=['DELETE'])
+@jwt_required()
 def delete_user(x_id):
     user = User.query.filter_by(x_id=x_id).first()
     if not user: 
