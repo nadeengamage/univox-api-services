@@ -9,3 +9,4 @@
 
 # Home
 from api.user import roles 
+from api.degree import degrees
