@@ -1,0 +1,35 @@
+{
+    "users": {
+        "type": "object",
+        "properties": {
+            "username": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 100
+            },
+            "password": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 100
+            },
+            "firstname": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 100
+            },
+            "lastname": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 100
+            },
+            "role": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "name",
+            "email",
+            "password"
+        ]
+    }
+}

@@ -39,6 +39,7 @@ def get_user_by_x_id(x_id):
 
 # create an user
 @app.route('/users', methods=['POST'])
+@app.validate( 'users', 'users')
 @jwt_required()
 def create_user():
     try:
@@ -48,7 +49,7 @@ def create_user():
                     password = payload['password'],
                     firstname = payload['firstname'],
                     lastname = payload['lastname'],
-                    role = payload['role'],
+                    role_id = payload['role'],
                     status = 1)
         db.session.add(user)
         db.session.commit()
@@ -61,6 +62,7 @@ def create_user():
 
 # update an user
 @app.route('/users/<x_id>', methods=['PUT'])
+@app.validate( 'users', 'users')
 @jwt_required()
 def update_user(x_id):
     user = User.query.filter_by(x_id=x_id).first()
@@ -75,7 +77,7 @@ def update_user(x_id):
             user.password = payload['password']
             user.firstname = payload['firstname']
             user.lastname = payload['lastname']
-            user.role = payload['role']
+            user.role_id = payload['role']
             user.status = payload['status']
 
             db.session.add(user)

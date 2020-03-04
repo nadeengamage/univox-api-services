@@ -13,7 +13,7 @@ from models.User import User
 
 class UserSchema(ma.Schema):
   class Meta:
-    fields = ('x_id', 'username', 'firstname', 'lastname', 'role', 'status')
+    fields = ('x_id', 'username', 'firstname', 'lastname', 'role_id', 'status')
 
 def extractor():
     payload = request.get_json()
@@ -22,5 +22,5 @@ def extractor():
                 password = payload['password'],
                 firstname = payload['firstname'],
                 lastname = payload['lastname'],
-                role = payload['role'],
+                role = payload['role_id'],
                 status = 1)
