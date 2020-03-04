@@ -12,3 +12,6 @@ from api.user import roles
 
 # User
 from api.user import users 
+
+# Degree
+from api.degree import degrees
