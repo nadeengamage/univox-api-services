@@ -25,7 +25,7 @@ class User(db.Model):
     updated_by = db.Column(db.String(50))
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
     
-    def __init(self, x_id, username):
+    def __init__(self, x_id, username):
         self.x_id = x_id
         self.username = username
         pass
