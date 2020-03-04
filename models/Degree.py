@@ -10,15 +10,14 @@
 from app import app, db
 
 class Degree(db.Model):
-    __tablename__ = 'degrees'
+    __tablename__ = 'tbl_degrees'
 
     id = db.Column(db.Integer, primary_key=True)
-    faculty = db.Column(db.Integer)
+    faculty_id = db.Column(db.Integer)
     degree_code = db.Column(db.String(10), unique=True)
     degree_name = db.Column(db.String(60), unique=True)
+    status = db.Column(db.Boolean)
+    created_by = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
+    updated_by = db.Column(db.String(50))
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
-
-    def __init__(self, degree_code):
-        self.degree_code
-        pass

@@ -9,6 +9,6 @@
 
 from app import ma
 
-class DegreeSchema(ma.schema):
+class DegreeSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'degree_code', 'degree_name')
+        fields = ('id', 'faculty_id', 'degree_code', 'degree_name')
