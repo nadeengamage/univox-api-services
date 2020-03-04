@@ -10,7 +10,7 @@
 from app import app, db
 
 class User(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = 'tbl_users'
 
     id = db.Column(db.Integer, primary_key=True)
     x_id = db.Column(db.String(50), unique=True)
@@ -18,14 +18,9 @@ class User(db.Model):
     password = db.Column(db.String(80))
     firstname = db.Column(db.String(100))
     lastname = db.Column(db.String(100))
-    role = db.Column(db.Integer)
+    role_id = db.Column(db.Integer)
     status = db.Column(db.Boolean)
     created_by = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_by = db.Column(db.String(50))
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
-    
-    def __init__(self, x_id, username):
-        self.x_id = x_id
-        self.username = username
-        pass
