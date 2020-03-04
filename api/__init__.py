@@ -10,6 +10,7 @@
 import os
 from flask import Flask, Response
 from core.middleware import Middleware
+from flask_jsonschema_validator import JSONSchemaValidator
 
 # Override response format
 class Response(Response):
@@ -40,5 +41,8 @@ def create_app():
     # Database
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
+
+    # Request Validator
+    JSONSchemaValidator(app=app, root="schemas/validations")
 
     return app

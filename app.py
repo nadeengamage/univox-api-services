@@ -8,7 +8,7 @@
 """
 
 import os
-from api import create_app
+from api import Response, create_app
 from core import bootstrap
 from flask_sqlalchemy import SQLAlchemy 
 from flask_marshmallow import Marshmallow 
@@ -29,6 +29,7 @@ bootstrap(app, db)
 db.init_app(app)
 ma.init_app(app)
 
+# JWT Authentication
 from services.auth import authenticate, identity
 JWT(app, authenticate, identity)
 
