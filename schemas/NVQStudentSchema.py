@@ -8,8 +8,9 @@
 """
 
 from app import ma
-from models import NVQStudent
+from models.NVQStudent import NVQStudent
 
 class NVQStudentSchema(ma.Schema):
   class Meta:
     model = NVQStudent
+    fields = ('index_no', 'diploma', 'remarks', 'permenent_address')

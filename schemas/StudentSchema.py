@@ -9,7 +9,8 @@
 
 from app import ma
 from models import Student
-from schemas import NVQStudentSchema, ALStudentSchema
+from schemas.NVQStudentSchema import NVQStudentSchema
+from schemas.ALStudentSchema import ALStudentSchema
 
 class StudentSchema(ma.Schema):
 
