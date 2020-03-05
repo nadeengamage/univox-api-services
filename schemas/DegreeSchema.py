@@ -8,7 +8,13 @@
 """
 
 from app import ma
+from models.Degree import Degree
+from schemas.FacultySchema import FacultySchema
 
-class DegreeSchema(ma.Schema):
+class DegreeSchema(ma.ModelSchema):
+    # Relation
+    faculty = ma.Nested(FacultySchema)
+    
     class Meta:
-        fields = ('faculty_id', 'degree_code', 'degree_name')
+        model = Degree
+        fields = ('faculty', 'degree_code', 'degree_name')

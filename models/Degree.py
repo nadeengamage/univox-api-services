@@ -8,12 +8,14 @@
 """
 
 from app import app, db
+from models.Faculty import Faculty
 
 class Degree(db.Model):
     __tablename__ = 'tbl_degrees'
 
     id = db.Column(db.Integer, primary_key=True)
     faculty_id = db.Column('deg_faculty_id',db.Integer, db.ForeignKey('tbl_faculties.id'), nullable=False)
+    faculty = db.relationship('Faculty', backref='tbl_degrees', uselist=False)
     degree_code = db.Column('deg_degree_code',db.String(10), unique=True, nullable=False)
     degree_name = db.Column('deg_degree_name',db.String(60), unique=True, nullable=False)
     status = db.Column(db.Boolean, nullable=False)
