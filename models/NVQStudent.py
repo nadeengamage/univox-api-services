@@ -8,13 +8,14 @@
 """
 
 from app import app, db
-import models.Student
+from models import Student
 
 class NVQStudent(db.Model):
     __tablename__ = 'tbl_student_nvq_details'
 
     id = db.Column('id',db.Integer, primary_key=True)
     student_id = db.Column('std_nvq_student_id',db.Integer, db.ForeignKey('tbl_students.id'), unique=True)
+    applicant = db.relationship('Student', backref='tbl_student_nvq_details', uselist=False)
     index_no = db.Column('std_nvq_index_no',db.String(50), unique=True)
     diploma = db.Column('std_nvq_diploma',db.String(80))
     remarks = db.Column('std_nvq_remarks',db.String(2000))

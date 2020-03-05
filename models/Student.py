@@ -8,11 +8,15 @@
 """
 
 from app import app, db
+from models import NVQStudent
+from models import ALStudent
 
 class Student(db.Model):
     __tablename__ = 'tbl_students'
 
-    id = db.Column('id', db.Integer, primary_key=True)
+    id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
+    nvq_details = db.relationship('NVQStudent', backref='tbl_students', uselist=False)
+    al_details = db.relationship('ALStudent', backref='tbl_students', uselist=False)
     application_no = db.Column('std_application_no', db.String(100), unique=True)
     identity_no = db.Column('std_identity_no', db.String(20), unique=True)
     student_type = db.Column('std_student_type', db.String(5))
@@ -32,8 +36,6 @@ class Student(db.Model):
     preference_2 = db.Column('std_preference_2', db.String(10))
     preference_3 = db.Column('std_preference_3', db.String(10))
     status = db.Column(db.Boolean)
-    nvq_details = db.relationship('NVQStudent', backref='tbl_student_nvq_details', uselist=False)
-    al_details = db.relationship('ALStudent', backref='tbl_student_al_details', uselist=False)
     created_by = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_by = db.Column(db.String(50))

@@ -51,7 +51,7 @@ def create_degree():
         db.session.commit()
     except exc.IntegrityError:
         db.session().rollback()
-        return jsonify({'error' : 'degree already exists!'}), 400
+        return jsonify({'error' : 'Degree already exists!'}), 400
         pass
 
     return jsonify({'message' : 'New degree has created!'}), 200

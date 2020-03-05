@@ -21,3 +21,6 @@ from api.degree import degrees
 
 # Criteria
 from api.degree import criterias
+
+# Applicant
+from api.student import applicants
