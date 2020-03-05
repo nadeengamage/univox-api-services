@@ -8,13 +8,14 @@
 """
 
 from app import app, db
-import models.Student
+from models import Student
 
 class ALStudent(db.Model):
     __tablename__ = 'tbl_student_al_details'
 
     id = db.Column('id', db.Integer, primary_key=True)
     student_id = db.Column('std_al_student_id', db.Integer, db.ForeignKey('tbl_students.id'), unique=True)
+    applicant = db.relationship('Student', backref='tbl_student_al_details', uselist=False)
     stream = db.Column('std_al_stream', db.String(50), unique=True)
     al_index_no = db.Column('std_al_index', db.String(50))
     z_score = db.Column('std_al_z_score', db.String(20))
