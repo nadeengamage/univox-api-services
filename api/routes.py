@@ -13,8 +13,11 @@ from api.user import roles
 # User
 from api.user import users 
 
+# Faculty
+from api.faculty import faculties
+
 # Degree
 from api.degree import degrees
 
-# Faculty
-from api.faculty import faculties
+# Criteria
+from api.degree import criterias
