@@ -4,11 +4,12 @@
     @web - www.nadeengamage.com
     @project - UnivoX
 
-    Description - Role schema.
+    Description - Student schema.
 """
 
 from app import ma
+from models import Student
 
-class DegreeSchema(ma.Schema):
-    class Meta:
-        fields = ('faculty_id', 'degree_code', 'degree_name')
+class StudentSchema(ma.Schema):
+  class Meta:
+    model = Student

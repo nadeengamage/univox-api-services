@@ -15,3 +15,6 @@ from api.user import users
 
 # Degree
 from api.degree import degrees
+
+# Faculty
+from api.faculty import faculties

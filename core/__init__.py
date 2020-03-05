@@ -12,9 +12,16 @@ def bootstrap(app, db):
     # Load routes
     from api import routes
 
-    # Database
-    from models import __all__
+    # Database Tables
+    # from models import Role
+    # from models import User
+    # from models import Faculty
+    # from models import Degree
+    # from models import Criteria
+    # from models import Student
+    # from models import NVQStudent
+    # from models import ALStudent
     
-    db.create_all()
-    db.session.commit()
+    # db.create_all()
+    # db.session.commit()
     pass

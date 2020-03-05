@@ -18,7 +18,7 @@ degree_schema = DegreeSchema()
 degrees_schema = DegreeSchema(many=True)
 
 # get all degrees
-@app.route('/degrees')
+@app.route('/degrees', methods=['GET'])
 @jwt_required()
 def get_degrees():
     degrees = Degree.query.filter_by(status=1).all()
