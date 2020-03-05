@@ -17,7 +17,7 @@ role_schema = RoleSchema()
 roles_schema = RoleSchema(many=True)
 
 # get all roles
-@app.route('/roles')
+@app.route('/roles', methods=['GET'])
 # @jwt_required()
 def get_roles():
     users = Role.query.all()

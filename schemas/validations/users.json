@@ -27,9 +27,11 @@
             }
         },
         "required": [
-            "name",
-            "email",
-            "password"
+            "username",
+            "password",
+            "firstname",
+            "lastname",
+            "role"
         ]
     }
 }

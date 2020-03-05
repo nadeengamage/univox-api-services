@@ -4,11 +4,12 @@
     @web - www.nadeengamage.com
     @project - UnivoX
 
-    Description - Role schema.
+    Description - Criteria schema.
 """
 
 from app import ma
+from models import Criteria
 
-class DegreeSchema(ma.Schema):
-    class Meta:
-        fields = ('faculty_id', 'degree_code', 'degree_name')
+class CriteriaSchema(ma.Schema):
+  class Meta:
+    model = Criteria

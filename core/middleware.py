@@ -20,5 +20,5 @@ class Middleware(object):
             return self.app(environ, start_response)
         else:
             start_response('404', [('Content-Type', 'application/json')])
-            return ["This url does not belong to the app.".encode()]
+            return ["Not Found".encode()]
             
