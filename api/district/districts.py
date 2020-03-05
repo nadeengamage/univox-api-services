@@ -31,4 +31,4 @@ def get_district_by_code(district_code):
     if not district:
         return {'message': 'Data not found!'}, 200
 
-    return {'data': district_schema.dump(district)}, 200
+    return {'data': districts_schema.dump(district)}, 200

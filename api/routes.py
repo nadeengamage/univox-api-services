@@ -18,3 +18,6 @@ from api.country import countries
 
 # District
 from api.district import districts
+
+# City
+from api.city import cities
