@@ -4,11 +4,11 @@
     @web - www.nadeengamage.com
     @project - UnivoX
 
-    Description - Country schema.
+    Description - District schema.
 """
 
 from app import ma
 
-class CountrySchema(ma.Schema):
+class DistrictSchema(ma.Schema):
     class Meta:
-        fields = ('country_code', 'country_iso', 'country_name')
+        fields = ('district_code', 'district_name')

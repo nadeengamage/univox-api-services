@@ -10,7 +10,7 @@
 from app import app, db
 
 class Country(db.Model):
-    __tablename__ = 'countries'
+    __tablename__ = 'tbl_countries'
 
     id = db.Column(db.Integer, primary_key=True)
     country_code = db.Column(db.String(10), unique=True)

@@ -13,5 +13,8 @@ from api.user import roles
 # User
 from api.user import users 
 
-#Country
+# Country
 from api.country import countries
+
+# District
+from api.district import districts

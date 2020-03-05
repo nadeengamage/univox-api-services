@@ -13,7 +13,7 @@ def bootstrap(app, db):
     from api import routes
 
     # Database
-    from models import __all__
+    from models.Country import Country
     
     db.create_all()
     db.session.commit()

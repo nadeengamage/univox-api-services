@@ -14,11 +14,11 @@ from schemas.CountrySchema import CountrySchema
 from flask_jwt import JWT, jwt_required, current_identity
 
 country_schema = CountrySchema()
-country_schema = CountrySchema(many=True)
+countries_schema = CountrySchema(many=True)
 
 #get all countries
-@app.route('/countries')
+@app.route('/countries', methods=['GET'])
 # @jwt_required()
 def get_countries():
     countries = Country.query.all()
-    return {'data': country_schema.dump(countries)}, 200
+    return {'data': countries_schema.dump(countries)}, 200
