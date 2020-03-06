@@ -11,6 +11,7 @@ import os
 from flask import Flask, Response
 from core.middleware import Middleware
 from flask_jsonschema_validator import JSONSchemaValidator
+from flask_cors import CORS
 
 # Override response format
 class Response(Response):
@@ -34,6 +35,9 @@ def create_app():
 
     # Middleware
     app.wsgi_app = Middleware(app.wsgi_app, prefix='/api/v1')
+
+    # Enable CORS
+    CORS(app)
 
     # Authentication 
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')

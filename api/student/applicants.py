@@ -21,7 +21,7 @@ students_schema = StudentSchema(many=True)
 
 # get all applicants
 @app.route('/applicants', methods=['GET'])
-# @jwt_required()
+@jwt_required()
 def get_applicants():
     applicants = Student.query.filter_by(status=1).all()
     return {'data': students_schema.dump(applicants)}, 200
