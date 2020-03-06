@@ -36,7 +36,7 @@ def create_app():
     # Middleware
     app.wsgi_app = Middleware(app.wsgi_app, prefix='/api/v1')
 
-    # Enable CORS
+    # add CORS support
     CORS(app)
 
     # Authentication 
