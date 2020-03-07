@@ -105,6 +105,7 @@ def create_applicant():
 @app.route('/applicants/nvq_students', methods=["POST"])
 def funcname():
     input_file = request.files['data_file']
+    applicant_details = []
     if not input_file:
         return "Can't find file!"
     
@@ -112,7 +113,9 @@ def funcname():
     csv_input = csv.reader(stream)
     print(csv_input)
     for row in csv_input:
-        print(row)
+        applicant_details = (row)
+        
+        print(applicant_details[0])
     return "Done"
         # applicant =  Student(
         #                 application_no = payload['application_no'].upper(),
