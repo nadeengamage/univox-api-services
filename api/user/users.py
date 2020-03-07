@@ -100,8 +100,7 @@ def delete_user(x_id):
     else:
         payload = request.get_json()
         try:
-            user.status = payload['status']
-
+            user.status = 0
             db.session.add(user)
             db.session.commit()
         except exc.IntegrityError:
