@@ -21,3 +21,16 @@ from api.district import districts
 
 # City
 from api.city import cities
+
+# Faculty
+from api.faculty import faculties
+
+# Degree
+from api.degree import degrees
+
+# Criteria
+from api.degree import criterias
+
+# Applicant
+from api.student import applicants
+

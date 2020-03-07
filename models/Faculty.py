@@ -4,21 +4,18 @@
     @web - www.nadeengamage.com
     @project - UnivoX
 
-    Description - Application users.
+    Description - Faculties.
 """
 
 from app import app, db
 
-class User(db.Model):
-    __tablename__ = 'tbl_users'
+class Faculty(db.Model):
+    __tablename__ = 'tbl_faculties'
 
     id = db.Column(db.Integer, primary_key=True)
-    x_id = db.Column(db.String(50), unique=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password = db.Column(db.String(80), nullable=False)
-    firstname = db.Column(db.String(100), nullable=False)
-    lastname = db.Column(db.String(100), nullable=False)
-    role_id = db.Column(db.Integer, nullable=False)
+    faculty_code = db.Column('fac_code',db.String(10), unique=True, nullable=False)
+    faculty_name = db.Column('fac_name',db.String(50), unique=True, nullable=False)
+    degrees = db.relationship('Degree', backref='tbl_degrees', uselist=False)
     status = db.Column(db.Boolean, nullable=False)
     created_by = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
