@@ -13,6 +13,15 @@ from api.user import roles
 # User
 from api.user import users 
 
+# Country
+from api.country import countries
+
+# District
+from api.district import districts
+
+# City
+from api.city import cities
+
 # Faculty
 from api.faculty import faculties
 
@@ -24,3 +33,4 @@ from api.degree import criterias
 
 # Applicant
 from api.student import applicants
+

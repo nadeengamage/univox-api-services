@@ -21,6 +21,7 @@ def bootstrap(app, db):
     # from models import Student
     # from models import NVQStudent
     # from models import ALStudent
+    # from models.Country import Country
     
     # db.create_all()
     # db.session.commit()
