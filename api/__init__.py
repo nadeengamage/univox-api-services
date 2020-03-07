@@ -12,6 +12,7 @@ from flask import Flask, Response
 from core.middleware import Middleware
 from flask_jsonschema_validator import JSONSchemaValidator
 from flask_cors import CORS
+import datetime
 
 # Override response format
 class Response(Response):
@@ -36,7 +37,7 @@ def create_app():
     # Middleware
     app.wsgi_app = Middleware(app.wsgi_app, prefix='/api/v1')
 
-    # Enable CORS
+    # add CORS support
     CORS(app)
 
     # Authentication 
@@ -45,6 +46,10 @@ def create_app():
     # Database
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
+
+    # JWT Token expire
+    app.config['JWT_VERIFY_EXPIRATION'] = os.getenv('JWT_VERIFY_EXPIRATION')
+    app.config['JWT_EXPIRATION_DELTA'] =  datetime.timedelta(seconds=86400)
 
     # Request Validator
     JSONSchemaValidator(app=app, root="schemas/validations")
