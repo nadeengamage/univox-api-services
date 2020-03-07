@@ -18,7 +18,7 @@ countries_schema = CountrySchema(many=True)
 
 #get all countries
 @app.route('/countries', methods=['GET'])
-# @jwt_required()
+@jwt_required()
 def get_countries():
     countries = Country.query.all()
     return {'data': countries_schema.dump(countries)}, 200

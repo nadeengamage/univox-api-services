@@ -28,7 +28,7 @@ def get_faculties():
 @app.route('/faculties/<code>', methods=['GET'])
 @jwt_required()
 def get_faculty_by_code(code):
-    faculty = Faculty.query.filter_by(faculty_code=code).first()
+    faculty = Faculty.query.filter_by(faculty_code=code.upper()).first()
 
     if not faculty:
         return {'message': 'Data not found!'}, 200    
