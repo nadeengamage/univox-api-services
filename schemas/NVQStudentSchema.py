@@ -13,4 +13,4 @@ from models.NVQStudent import NVQStudent
 class NVQStudentSchema(ma.Schema):
   class Meta:
     model = NVQStudent
-    fields = ('index_no', 'diploma', 'remarks', 'permenent_address')
+    fields = ('application_no', 'index_no', 'diploma', 'remarks', 'permenent_address')
