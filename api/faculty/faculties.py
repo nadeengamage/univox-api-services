@@ -92,7 +92,7 @@ def delete_faculty(code):
         return {'message': 'Data not found!'}, 200 
     else:
         try:
-            Faculty.status = 0
+            faculty.status = 0
 
             db.session.add(faculty)
             db.session.commit()
