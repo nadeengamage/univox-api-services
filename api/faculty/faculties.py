@@ -92,13 +92,11 @@ def delete_faculty(code):
         return {'message': 'Data not found!'}, 200 
     else:
         try:
-            faculty.status = 0
-
-            db.session.add(faculty)
+            db.session.delete(faculty)
             db.session.commit()
         except exc.IntegrityError:
             db.session().rollback()
             return jsonify({'error' : 'Something error!'}), 400
             pass
 
-    return jsonify({'message' : 'faculty has been deleted!'}), 200
+    return jsonify({'message' : 'Faculty has been deleted!'}), 200
