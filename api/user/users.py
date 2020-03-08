@@ -74,7 +74,7 @@ def update_user(x_id):
 
         try:
             user.username = payload['username']
-            if payload['password']: 
+            if 'password' not in payload: 
                 user.password = user.password
             else: 
                 user.password = payload['password']
