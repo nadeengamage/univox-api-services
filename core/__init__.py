@@ -13,7 +13,7 @@ def bootstrap(app, db):
     from api import routes
 
     # Database Tables
-    from models import Role
+    # from models import Role
     # from models import User
     # from models import Faculty
     # from models import Degree
@@ -23,6 +23,6 @@ def bootstrap(app, db):
     # from models import ALStudent
     # from models.Country import Country
     
-    db.create_all()
-    db.session.commit()
+    # db.create_all()
+    # db.session.commit()
     pass

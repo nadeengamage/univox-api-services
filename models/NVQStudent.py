@@ -15,6 +15,7 @@ class NVQStudent(db.Model):
 
     id = db.Column('id',db.Integer, primary_key=True)
     student_id = db.Column('std_nvq_student_id',db.Integer, db.ForeignKey('tbl_students.id'), unique=True)
+    application_no = db.Column('std_application_no', db.String(100), unique=True)
     applicant = db.relationship('Student', backref='tbl_student_nvq_details', uselist=False)
     index_no = db.Column('std_nvq_index_no',db.String(50), unique=True)
     diploma = db.Column('std_nvq_diploma',db.String(80))
