@@ -10,6 +10,7 @@
 from app import app, db
 from flask import jsonify, request
 from models.Degree import Degree
+from models.Faculty import Faculty
 from schemas.DegreeSchema import DegreeSchema
 from flask_jwt import JWT, jwt_required, current_identity
 from sqlalchemy import exc
@@ -21,7 +22,7 @@ degrees_schema = DegreeSchema(many=True)
 @app.route('/degrees', methods=['GET'])
 @jwt_required()
 def get_degrees():
-    degrees = Degree.query.filter_by(status=1).all()
+    degrees = Degree.query.filter_by().all()
     return {'data': degrees_schema.dump(degrees)}, 200
 
 # get by id
@@ -41,8 +42,14 @@ def get_degree_by_code(code):
 def create_degree():
     try:
         payload = request.get_json()
+
+        faculty = Faculty.query.filter_by(faculty_code=payload['faculty_code']).first()
+
+        if not faculty:
+            return {'message': 'Faculty data not found!'}, 200 
+
         degree =  Degree(
-                    faculty_id = payload['faculty_id'],
+                    faculty_id = faculty.id,
                     degree_code = payload['degree_code'].upper(),
                     degree_name = payload['degree_name'],
                     status = 1,
@@ -68,7 +75,10 @@ def update_degree(code):
         payload = request.get_json()
 
         try:
-            degree.faculty_id = payload['faculty_id']
+
+            faculty = Faculty.query.filter_by(faculty_code=payload['faculty_code']).first()
+
+            degree.faculty_id = faculty.id
             degree.degree_code = payload['degree_code']
             degree.degree_name = payload['degree_name']
             degree.status = payload['status']
@@ -88,14 +98,12 @@ def update_degree(code):
 @app.route('/degrees/<code>', methods=['DELETE'])
 @jwt_required()
 def delete_degree(code):
-    degree = Degree.query.filter_by(degree_code=code).first()
+    degree = Degree.query.filter_by(degree_code=code.upper()).first()
     if not degree: 
         return {'message': 'Data not found!'}, 200 
     else:
         try:
-            degree.status = 0
-
-            db.session.add(degree)
+            db.session.delete(degree)
             db.session.commit()
         except exc.IntegrityError:
             db.session().rollback()
