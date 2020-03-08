@@ -21,11 +21,18 @@ import csv
 student_schema = StudentSchema()
 students_schema = StudentSchema(many=True)
 
-# get all applicants
-@app.route('/applicants', methods=['GET'])
+# get all nvq applicants
+@app.route('/applicants/nvq/details', methods=['GET'])
 @jwt_required()
-def get_applicants():
-    applicants = Student.query.filter_by(status=1).all()
+def get_nvq_applicants():
+    applicants = Student.query.filter_by(student_type='NVQ').all()
+    return {'data': students_schema.dump(applicants)}, 200
+
+# get all al applicants
+@app.route('/applicants/al/details', methods=['GET'])
+@jwt_required()
+def get_al_applicants():
+    applicants = Student.query.filter_by(student_type='AL').all()
     return {'data': students_schema.dump(applicants)}, 200
 
 # get by id
@@ -47,7 +54,6 @@ def create_applicant():
         payload = request.get_json()
         student_type = payload['student_type'].upper()
         applicant =  Student(
-                        application_no = payload['application_no'].upper(),
                         identity_no = payload['identity_no'].upper(),
                         student_type = student_type,
                         initials = payload['initials'].upper(),
@@ -73,6 +79,7 @@ def create_applicant():
         db.session.refresh(applicant)
         if student_type == "NVQ":
             nvq_student = NVQStudent(student_id = applicant.id,
+                                    application_no = payload['application_no'].upper(),
                                     index_no = payload['index_no'],
                                     diploma = payload['diploma'],
                                     remarks = payload['remarks'],
@@ -81,6 +88,7 @@ def create_applicant():
             db.session.add(nvq_student)
         elif student_type == "AL":
             al_student = ALStudent(student_id = applicant.id,
+                                    application_no = payload['application_no'].upper(),
                                     stream = payload['stream'],
                                     al_index_no = payload['al_index_no'],
                                     z_score = payload['z_score'],

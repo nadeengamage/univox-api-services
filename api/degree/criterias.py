@@ -47,8 +47,14 @@ def get_criteria_by_code(code):
 def create_criteria():
     try:
         payload = request.get_json()
+
+        degree = Degree.query.filter_by(degree_code=payload['degree_code'].upper()).first()
+
+        if not degree:
+            return {'message': 'Data not found!'}, 200
+
         criteria =  Criteria(
-                    degree_id = payload['degree_id'],
+                    degree_id = degree.id,
                     btch_one_stud_per_program = payload['btch_one_stud_per_program'],
                     btch_two_stud_per_program = payload['btch_two_stud_per_program'],
                     first_exam_paper_mark = payload['first_exam_paper_mark'],
@@ -83,7 +89,7 @@ def update_criteria(code):
             payload = request.get_json()
 
             try:
-                criteria.degree_id = payload['degree_id']
+                criteria.degree_id = degree.id
                 criteria.btch_one_stud_per_program = payload['btch_one_stud_per_program']
                 criteria.btch_two_stud_per_program = payload['btch_two_stud_per_program']
                 criteria.first_exam_paper_mark = payload['first_exam_paper_mark']

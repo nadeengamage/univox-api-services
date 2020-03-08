@@ -17,7 +17,6 @@ class Student(db.Model):
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
     nvq_details = db.relationship('NVQStudent', backref='tbl_students', uselist=False)
     al_details = db.relationship('ALStudent', backref='tbl_students', uselist=False)
-    application_no = db.Column('std_application_no', db.String(100), unique=True)
     identity_no = db.Column('std_identity_no', db.String(20), unique=True)
     student_type = db.Column('std_student_type', db.String(5))
     initials = db.Column('std_initials', db.String(20))
