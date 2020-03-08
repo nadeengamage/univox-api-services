@@ -21,7 +21,7 @@ faculties_schema = FacultySchema(many=True)
 @app.route('/faculties', methods=['GET'])
 @jwt_required()
 def get_faculties():
-    faculties = Faculty.query.filter_by(status=1).all()
+    faculties = Faculty.query.filter_by().all()
     return {'data': faculties_schema.dump(faculties)}, 200
 
 # get by id
