@@ -62,7 +62,7 @@ def create_user():
 
 # update an user
 @app.route('/users/<x_id>', methods=['PUT'])
-@app.validate( 'users', 'users')
+@app.validate( 'users', 'users_update')
 @jwt_required()
 def update_user(x_id):
     user = User.query.filter_by(x_id=x_id).first()
