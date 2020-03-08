@@ -23,7 +23,6 @@
         },
         "required": [
             "username",
-            "password",
             "firstname",
             "lastname",
             "role"

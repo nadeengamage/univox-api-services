@@ -10,10 +10,14 @@
 from flask import request
 from app import ma
 from models.User import User
+from schemas.RoleSchema import RoleSchema
 
 class UserSchema(ma.Schema):
+
+  roles = ma.Nested(RoleSchema)
+
   class Meta:
-    fields = ('x_id', 'username', 'firstname', 'lastname', 'role_id', 'status')
+    fields = ('x_id', 'username', 'firstname', 'lastname', 'role_id', 'status', 'roles')
 
 def extractor():
     payload = request.get_json()

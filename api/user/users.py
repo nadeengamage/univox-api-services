@@ -62,7 +62,7 @@ def create_user():
 
 # update an user
 @app.route('/users/<x_id>', methods=['PUT'])
-@app.validate( 'users', 'users_update')
+@app.validate('users_update', 'users')
 @jwt_required()
 def update_user(x_id):
     user = User.query.filter_by(x_id=x_id).first()
@@ -74,7 +74,10 @@ def update_user(x_id):
 
         try:
             user.username = payload['username']
-            user.password = payload['password']
+            if payload['password']: 
+                user.password = user.password
+            else: 
+                user.password = payload['password']
             user.firstname = payload['firstname']
             user.lastname = payload['lastname']
             user.role_id = payload['role']
