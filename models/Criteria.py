@@ -8,14 +8,13 @@
 """
 
 from app import app, db
-# from models.Degree import Degree
 
 class Criteria(db.Model):
     __tablename__ = 'tbl_criterias'
 
     id = db.Column(db.Integer, primary_key=True)
     degree_id = db.Column('crt_degree_id', db.Integer, db.ForeignKey('tbl_degrees.id'), nullable=False, unique=True)
-    # degree = db.relationship('Degree', backref='tbl_criterias', uselist=False)
+    degree = db.relationship('Degree', backref='tbl_criterias', uselist=False)
     btch_one_stud_per_program = db.Column('crt_btch_one_stud_per_program', db.Integer, primary_key=True)
     btch_two_stud_per_program = db.Column('crt_btch_two_stud_per_program', db.Integer, primary_key=True)
     first_exam_paper_mark = db.Column('crt_first_exam_paper_mark', db.String(10), primary_key=True)

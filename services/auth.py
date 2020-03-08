@@ -13,7 +13,7 @@ from flask import request
 import jwt
 
 def authenticate(username, password):
-    user = User.query.filter_by(username=username).first()
+    user = User.query.filter_by(username=username, status=1).first()
     if user and safe_str_cmp(user.password.encode('utf-8'), password.encode('utf-8')):
         return user
 
