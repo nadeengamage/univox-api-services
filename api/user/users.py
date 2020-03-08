@@ -23,7 +23,7 @@ users_schema = UserSchema(many=True)
 @app.route('/users', methods=['GET'])
 @jwt_required()
 def get_all_users():
-    users = User.query.filter_by(status=1).all()
+    users = User.query.filter_by().all()
     return {'data': users_schema.dump(users)}, 200
 
 # get by id
