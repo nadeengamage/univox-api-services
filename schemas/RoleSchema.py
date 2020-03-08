@@ -11,4 +11,4 @@ from app import ma
 
 class RoleSchema(ma.Schema):
   class Meta:
-    fields = ('id', 'role_code', 'role_name')
+    fields = ('role_code', 'role_name')
