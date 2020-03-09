@@ -13,7 +13,7 @@ from models.Student import Student
 from models.NVQStudent import NVQStudent
 from models.ALStudent import ALStudent
 from schemas.StudentSchema import StudentSchema
-from services.extractor import extract_nvq_details
+from services.extractor import extract_nvq_details, extract_al_details
 from exceptions.validations import ValidationError
 from flask_jwt import JWT, jwt_required, current_identity
 from sqlalchemy import exc
@@ -111,7 +111,7 @@ def create_applicant():
 
     return jsonify({'message' : 'New applicant has created!'}), 200
 
-# create a student
+# nvq students bulk import
 @app.route('/applicants/transform/nvq_students', methods=["POST"])
 def create_bulk_import_nvq():
     input_file = request.files['data_file']
@@ -161,6 +161,71 @@ def create_bulk_import_nvq():
                                     permenent_address = applicant.get('permenent_address'),
                                     created_by = 'admin')
             db.session.add(nvq_student)
+
+            db.session.commit()
+    except ValidationError as e:
+        return jsonify({'error': str(e)}), 400
+        pass
+    except exc.IntegrityError as e:
+        db.session().rollback()
+        return jsonify({'error' : str(e.args)}), 400
+        pass
+    
+    return jsonify({'message' : 'Bulk import succeeded!'}), 200
+
+# al student bulk import
+@app.route('/applicants/transform/al_students', methods=["POST"])
+def create_bulk_import_al():
+    input_file = request.files['data_file']
+
+    if not input_file:
+        return "Can't find a file!"
+    
+    try:
+        stream = io.StringIO(input_file.stream.read().decode("UTF8"), newline=None)
+        csv_input = csv.reader(stream)
+
+        if not csv_input:
+            return jsonify({'error': 'CSV file is required'}), 400
+
+        applicants = extract_al_details([row for row in csv_input])  
+        for applicant in applicants:
+            applicant_details =  Student(
+                            identity_no = applicant.get('identity_no'),
+                            student_type = 'AL',
+                            initials = applicant.get('initials'),
+                            surename = applicant.get('surename'),
+                            title = applicant.get('title'),
+                            gender = applicant.get('gender'),
+                            ethnicity = applicant.get('ethnicity'),
+                            address_1 = applicant.get('address_1'),
+                            address_2 = applicant.get('address_2'),
+                            city = applicant.get('city'),
+                            district = applicant.get('district'),
+                            telephone = applicant.get('telephone'),
+                            mobile = applicant.get('mobile'),
+                            email = applicant.get('email'),
+                            preference_1 = applicant.get('preference_1'),
+                            preference_2 = applicant.get('preference_2'),
+                            preference_3 = applicant.get('preference_3'),
+                            status = 1,
+                            created_by = 'admin')
+
+            db.session.add(applicant_details)
+            db.session.flush()
+            db.session.refresh(applicant_details)
+
+            al_student = ALStudent(student_id = applicant_details.id,
+                                    application_no = applicant.get('application_no'),
+                                    stream = applicant.get('stream'),
+                                    al_index_no = applicant.get('al_index_no'),
+                                    z_score = applicant.get('z_score'),
+                                    al_ict = applicant.get('al_ict_grade'),
+                                    comm_and_media = applicant.get('comm_media_grade'),
+                                    general_english = applicant.get('gen_eng_grade'),
+                                    general_common_test = applicant.get('com_gen_test_grade'),
+                                    created_by = 'admin')
+            db.session.add(al_student)
 
             db.session.commit()
     except ValidationError as e:
