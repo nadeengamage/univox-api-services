@@ -113,6 +113,7 @@ def create_applicant():
 
 # nvq students bulk import
 @app.route('/applicants/transform/nvq_students', methods=["POST"])
+@jwt_required()
 def create_bulk_import_nvq():
     input_file = request.files['data_file']
 
@@ -175,6 +176,7 @@ def create_bulk_import_nvq():
 
 # al student bulk import
 @app.route('/applicants/transform/al_students', methods=["POST"])
+@jwt_required()
 def create_bulk_import_al():
     input_file = request.files['data_file']
 
