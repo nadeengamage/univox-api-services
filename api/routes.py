@@ -34,3 +34,6 @@ from api.degree import criterias
 # Applicant
 from api.student import applicants
 
+# Diploma
+from api.diploma import diplomas
+
