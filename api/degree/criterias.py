@@ -62,7 +62,7 @@ def create_criteria():
                     btch_one_cut_off_mark = payload['btch_one_cut_off_mark'],
                     btch_two_cut_off_mark = payload['btch_two_cut_off_mark'],
                     status = 1,
-                    created_by = 'admin')
+                    created_by = current_identity.username)
         db.session.add(criteria)
         db.session.commit()
     except exc.IntegrityError:
@@ -97,7 +97,7 @@ def update_criteria(code):
                 criteria.btch_one_cut_off_mark = payload['btch_one_cut_off_mark']
                 criteria.btch_two_cut_off_mark = payload['btch_two_cut_off_mark']
                 criteria.status = payload['status']
-                criteria.updated_by = 'admin'
+                criteria.updated_by = current_identity.username
 
                 db.session.add(criteria)
                 db.session.commit()
@@ -123,7 +123,7 @@ def delete_criteria(code):
         else:
             try:
                 criteria.status = 0
-
+                criteria.updated_by = current_identity.username
                 db.session.add(criteria)
                 db.session.commit()
             except exc.IntegrityError:

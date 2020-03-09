@@ -45,7 +45,7 @@ def create_faculty():
                     faculty_code = payload['faculty_code'].upper(),
                     faculty_name = payload['faculty_name'],
                     status = 1,
-                    created_by = 'admin')
+                    created_by = current_identity.username)
 
         db.session.add(faculty)
         db.session.commit()
@@ -71,7 +71,7 @@ def update_faculty(code):
             Faculty.faculty_code = payload['faculty_code'].upper()
             Faculty.faculty_name = payload['faculty_name']
             Faculty.status = payload['status']
-            Faculty.updated_by = 'admin'
+            Faculty.updated_by = current_identity.username
 
             db.session.add(faculty)
             db.session.commit()
