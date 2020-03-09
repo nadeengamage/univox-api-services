@@ -76,7 +76,7 @@ def create_applicant():
                         preference_2 = payload['preference_2'],
                         preference_3 = payload['preference_3'],
                         status = 1,
-                        created_by = 'admin')
+                        created_by = current_identity.username)
 
         db.session.add(applicant)
         db.session.flush()
@@ -89,7 +89,7 @@ def create_applicant():
                                     diploma = payload['diploma'],
                                     remarks = payload['remarks'],
                                     permenent_address = payload['permenent_address'],
-                                    created_by = 'admin')
+                                    created_by = current_identity.username)
             db.session.add(nvq_student)
         elif student_type == "AL":
             al_student = ALStudent(student_id = applicant.id,
@@ -101,7 +101,7 @@ def create_applicant():
                                     comm_and_media = payload['comm_and_media'],
                                     general_english = payload['general_english'],
                                     general_common_test = payload['general_common_test'],
-                                    created_by = 'admin')
+                                    created_by = current_identity.username)
             db.session.add(al_student)
         else:
             return jsonify({'error' : 'Invalid student type!'}), 400
@@ -114,14 +114,91 @@ def create_applicant():
 
     return jsonify({'message' : 'New applicant has created!'}), 200
 
+# update an degree
+@app.route('/applicants/<path:number>', methods=['PUT'])
+@jwt_required()
+def update_applicant(number):
+    try:
+        payload = request.get_json()
+        student_type = payload['student_type'].upper()
+
+        if student_type == "NVQ":
+            nvq_applicant = NVQStudent.query.filter_by(application_no=number.upper()).first()
+            if not nvq_applicant:
+                return jsonify({'error' : 'Applicant not found!'}), 400 
+
+            applicant = Student.query.filter_by(id=nvq_applicant.student_id).first()
+        else:
+            al_applicant = ALStudent.query.filter_by(application_no=number.upper()).first()
+            if not al_applicant:
+                return jsonify({'error' : 'Applicant not found!'}), 400 
+            applicant = Student.query.filter_by(id=al_applicant.student_id).first()
+
+        applicant.identity_no = payload['identity_no'].upper()
+        applicant.student_type = student_type
+        applicant.initials = payload['initials'].upper()
+        applicant.surename = payload['surename'].upper()
+        applicant.title = payload['title']
+        applicant.gender = payload['gender']
+        applicant.marital_status = payload['marital_status']
+        applicant.ethnicity = payload['ethnicity']
+        applicant.address_1 = payload['address_1']
+        applicant.address_2 = payload['address_2']
+        applicant.address_3 = payload['address_3']
+        applicant.city = payload['city']
+        applicant.district = payload['district']
+        applicant.telephone = payload['telephone']
+        applicant.mobile = payload['mobile']
+        applicant.email = payload['email']
+        applicant.preference_1 = payload['preference_1']
+        applicant.preference_2 = payload['preference_2']
+        applicant.preference_3 = payload['preference_3']
+        applicant.status = payload['status']
+        applicant.updated_by = current_identity.username
+
+        db.session.add(applicant)
+
+        if student_type == "NVQ":
+            nvq_applicant.student_id = applicant.id
+            nvq_applicant.application_no = payload['application_no'].upper()
+            nvq_applicant.batch_type = payload['batch_type'].upper()
+            nvq_applicant.index_no = payload['index_no']
+            nvq_applicant.diploma = payload['diploma']
+            nvq_applicant.remarks = payload['remarks']
+            nvq_applicant.permenent_address = payload['permenent_address']
+            nvq_applicant.updated_by = current_identity.username
+            db.session.add(nvq_applicant)
+        elif student_type == "AL":
+            al_applicant.student_id = applicant.id,
+            al_applicant.application_no = payload['application_no'].upper()
+            al_applicant.stream = payload['stream']
+            al_applicant.al_index_no = payload['al_index_no']
+            al_applicant.z_score = payload['z_score']
+            al_applicant.al_ict = payload['al_ict']
+            al_applicant.comm_and_media = payload['comm_and_media']
+            al_applicant.general_english = payload['general_english']
+            al_applicant.general_common_test = payload['general_common_test']
+            al_applicant.updated_by = current_identity.username
+            db.session.add(al_applicant)
+        else:
+            return jsonify({'error' : 'Invalid student type!'}), 400
+
+        db.session.commit()
+    except exc.IntegrityError:
+        db.session().rollback()
+        return jsonify({'error' : 'Applicant already exists!'}), 400
+        pass
+
+    return jsonify({'message' : 'Applicant has updated!'}), 200
+
 # nvq students bulk import
 @app.route('/applicants/transform/nvq_students', methods=["POST"])
 @jwt_required()
 def create_bulk_import_nvq():
-    input_file = request.files['data_file']
+    input_file = request.files.get('files')
 
     if not input_file:
-        return "Can't find a file!"
+        return jsonify({'error': 'CSV file is required'}), 400
     
     try:
         stream = io.StringIO(input_file.stream.read().decode("UTF8"), newline=None)
@@ -151,7 +228,7 @@ def create_bulk_import_nvq():
                             preference_2 = applicant.get('preference_2'),
                             preference_3 = applicant.get('preference_3'),
                             status = 1,
-                            created_by = 'admin')
+                            created_by = current_identity.username)
 
             db.session.add(applicant_details)
             db.session.flush()
@@ -163,7 +240,7 @@ def create_bulk_import_nvq():
                                     diploma = applicant.get('diploma'),
                                     remarks = applicant.get('remarks'),
                                     permenent_address = applicant.get('permenent_address'),
-                                    created_by = 'admin')
+                                    created_by = current_identity.username)
             db.session.add(nvq_student)
 
             db.session.commit()
@@ -181,10 +258,10 @@ def create_bulk_import_nvq():
 @app.route('/applicants/transform/al_students', methods=["POST"])
 @jwt_required()
 def create_bulk_import_al():
-    input_file = request.files['data_file']
+    input_file = request.files.get('files')
 
     if not input_file:
-        return "Can't find a file!"
+        return jsonify({'error': 'CSV file is required'}), 400
     
     try:
         stream = io.StringIO(input_file.stream.read().decode("UTF8"), newline=None)
@@ -214,7 +291,7 @@ def create_bulk_import_al():
                             preference_2 = applicant.get('preference_2'),
                             preference_3 = applicant.get('preference_3'),
                             status = 1,
-                            created_by = 'admin')
+                            created_by = current_identity.username)
 
             db.session.add(applicant_details)
             db.session.flush()
@@ -229,7 +306,7 @@ def create_bulk_import_al():
                                     comm_and_media = applicant.get('comm_media_grade'),
                                     general_english = applicant.get('gen_eng_grade'),
                                     general_common_test = applicant.get('com_gen_test_grade'),
-                                    created_by = 'admin')
+                                    created_by = current_identity.username)
             db.session.add(al_student)
 
             db.session.commit()
