@@ -1,0 +1,85 @@
+"""
+    @author - Nadeen Gamage
+    @email - nadeengamage@gmail.com
+    @web - www.nadeengamage.com
+    @project - UnivoX
+
+    Description - Extractor.
+"""
+
+from app import app, db
+from flask import jsonify
+from models.NVQStudent import NVQStudent
+from exceptions.validations import ValidationError
+import re
+
+MAXUMUM_ROWS = 500
+
+# extract records
+def extract_nvq_details(records):
+    result = []
+
+    if len(records) > MAXUMUM_ROWS:
+        raise ValidationError(str.format('Maximum row count is 500'))
+        
+    if (len(records) > 1):
+        for record in records[1:]:
+            check_user_already_exists(record[1].upper())
+
+            details = {
+                'application_no': validate_application_number(record[1].upper()),
+                'identity_no': validate_identity_number(record[2]),
+                'index_no': check_empty_column('Index number is required', record[1], record[3]),
+                'initials': check_empty_column('Initial letters are required', record[1], record[4]),
+                'surename': check_empty_column('Surename is required', record[1], record[5]),
+                'title': check_empty_column('Title is required', record[1], record[6]),
+                'gender': check_empty_column('Initial letters required', record[1], record[7]),
+                'ethnicity': check_empty_column('Ethnicity is required', record[1], record[8]),
+                'address_1': check_empty_column('Address line one is required', record[1], record[9]),
+                'address_2': check_empty_column('Address line two is required', record[1], record[10]),
+                'city': check_empty_column('City is required', record[1], record[11]),
+                'district': check_empty_column('District is required', record[1], record[12]),
+                'telephone': record[13],
+                'mobile': check_empty_column('Mobile is required', record[1], record[14]),
+                'email': record[15],
+                'diploma': check_empty_column('Diploma is required', record[1], record[16]),
+                'preference_1': check_empty_column('Preference one is required', record[1], record[17]),
+                'preference_2': record[18],
+                'preference_3': record[19],
+                'remarks': record[20],
+                'permenent_address': record[21]
+            }
+            result.append(details)
+    return result
+
+
+def check_user_already_exists(application_number):
+    applicant = NVQStudent.query.filter_by(application_no=application_number.upper()).first()
+    if applicant:
+        raise ValidationError(str.format('Applicant already exists - {}', applicant.application_no))
+    pass
+
+def validate_application_number(number):
+    if re.search("^NVQ/\w+/B[1|2]{1}/\d+$", number):
+        return str(number)
+    else:
+        raise ValidationError(str.format('Invalid application number - {}', number))
+
+
+def validate_identity_number(number):
+    if re.search("^(?:19|20)?\d{2}(?:[01235678]\d\d(?<!(?:000|500|36[7-9]|3[7-9]\d|86[7-9]|8[7-9]\d)))\d{4}(?:[vVxX])$", number):
+        return str(number)
+    else:
+        raise ValidationError(str.format('Invalid identity number - {}', number))
+
+def validate_only_strings(value):
+    if re.search("^[a-zA-Z]+", value):
+        return str(value)
+    else:
+        raise ValidationError(str.format('Invalid input value - {}', value))
+
+def check_empty_column(message, application_no, value):
+    if not value:
+        raise ValidationError(str.format('{} - {}', message, application_no))
+    else:
+        return value
