@@ -9,7 +9,7 @@
 from app import app, db
 from flask import jsonify, request
 from models.Diploma import Diploma
-from schemas.diplomaSchema import diplomaSchema
+from schemas.DiplomaSchema import DiplomaSchema
 from flask_jwt import JWT, jwt_required, current_identity
 from sqlalchemy import exc
 
@@ -20,8 +20,19 @@ diplomas_schema = DiplomaSchema(many=True)
 @app.route('/diplomas', methods=['GET'])
 @jwt_required()
 def get_diplomas():
-    diplomas = Diploma.query.filter_by().all()
-    return {'data', diplomas_schema.dump(diplomas)}, 200
+    diplomas = Diploma.query.all()
+    return {'data': diplomas_schema.dump(diplomas)}, 200
+
+# get by id
+@app.route('/diplomas/<code>', methods=['GET'])
+@jwt_required()
+def get_diploma_by_code(code):
+    diploma = Diploma.query.filter_by(dip_code=code.upper()).first()
+
+    if not diploma:
+        return {'message': 'Data not found!'}, 200    
+
+    return {'data': diploma_schema.dump(diploma)}, 200
 
 # create an diploma
 @app.route('/diplomas', methods=['POST'])
@@ -49,7 +60,7 @@ def create_diploma():
 @app.route('/diplomas/<code>', methods=['PUT'])
 @jwt_required()
 def update_diploma(code):
-    diploma = Diploma.query.filter_by(dip_code=code).first()
+    diploma = Diploma.query.filter_by(dip_code=code.upper()).first()
     if not diploma:
         return {'message': 'Data not found!'}, 200
     else:

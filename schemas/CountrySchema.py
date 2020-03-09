@@ -1,10 +1,9 @@
 """
-    @author - Nadeen Gamage
-    @email - nadeengamage@gmail.com
-    @web - www.nadeengamage.com
+    @author - Waruna Nissanka
+    @email - warunanissanka44@gmail.com
     @project - UnivoX
 
-    Description - Country schema.
+    Description - diploma Controller.
 """
 
 from app import ma
