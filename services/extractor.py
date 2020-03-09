@@ -10,6 +10,7 @@
 from app import app, db
 from flask import jsonify
 from models.NVQStudent import NVQStudent
+from models.ALStudent import ALStudent
 from exceptions.validations import ValidationError
 import re
 
@@ -24,10 +25,10 @@ def extract_nvq_details(records):
         
     if (len(records) > 1):
         for record in records[1:]:
-            check_user_already_exists(record[1].upper())
+            check_nvq_student_already_exists(record[1].upper())
 
             details = {
-                'application_no': validate_application_number(record[1].upper()),
+                'application_no': validate_nvq_application_number(record[1].upper()),
                 'identity_no': validate_identity_number(record[2]),
                 'index_no': check_empty_column('Index number is required', record[1], record[3]),
                 'initials': check_empty_column('Initial letters are required', record[1], record[4]),
@@ -52,19 +53,70 @@ def extract_nvq_details(records):
             result.append(details)
     return result
 
+# extract records
+def extract_al_details(records):
+    result = []
 
-def check_user_already_exists(application_number):
+    if len(records) > MAXUMUM_ROWS:
+        raise ValidationError(str.format('Maximum row count is 500'))
+        
+    if (len(records) > 1):
+        for record in records[1:]:
+            check_al_student_already_exists(record[1].upper())
+
+            details = {
+                'application_no': validate_al_application_number(record[1].upper()),
+                'identity_no': validate_identity_number(record[2]),
+                'initials': check_empty_column('Initial letters are required', record[1], record[3]),
+                'surename': check_empty_column('Surename is required', record[1], record[4]),
+                'title': check_empty_column('Title is required', record[1], record[5]),
+                'gender': check_empty_column('Initial letters required', record[1], record[6]),
+                'ethnicity': check_empty_column('Ethnicity is required', record[1], record[7]),
+                'address_1': check_empty_column('Address line one is required', record[1], record[8]),
+                'address_2': check_empty_column('Address line two is required', record[1], record[9]),
+                'city': check_empty_column('City is required', record[1], record[10]),
+                'district': check_empty_column('District is required', record[1], record[11]),
+                'telephone': record[12],
+                'mobile': check_empty_column('Mobile is required', record[1], record[13]),
+                'email': record[14],
+                'preference_1': check_empty_column('Preference one is required', record[1], record[18]),
+                'preference_2': record[19],
+                'preference_3': record[20],
+                'stream': check_empty_column('Diploma is required', record[1], record[15]),
+                'al_index_no': check_empty_column('Diploma is required', record[1], record[16]),
+                'z_score': check_empty_column('Diploma is required', record[1], record[17]),
+                'al_ict_grade': record[21],
+                'comm_media_grade': record[22],
+                'gen_eng_grade': record[23],
+                'com_gen_test_grade': record[24]
+            }
+            result.append(details)
+    return result
+
+
+def check_nvq_student_already_exists(application_number):
     applicant = NVQStudent.query.filter_by(application_no=application_number.upper()).first()
     if applicant:
         raise ValidationError(str.format('Applicant already exists - {}', applicant.application_no))
     pass
 
-def validate_application_number(number):
+def check_al_student_already_exists(application_number):
+    applicant = ALStudent.query.filter_by(application_no=application_number.upper()).first()
+    if applicant:
+        raise ValidationError(str.format('Applicant already exists - {}', applicant.application_no))
+    pass
+
+def validate_nvq_application_number(number):
     if re.search("^NVQ/\w+/B[1|2]{1}/\d+$", number):
         return str(number)
     else:
         raise ValidationError(str.format('Invalid application number - {}', number))
 
+def validate_al_application_number(number):
+    if re.search("^AL/\w+/\d+/\d+$", number):
+        return str(number)
+    else:
+        raise ValidationError(str.format('Invalid application number - {}', number))
 
 def validate_identity_number(number):
     if re.search("^(?:19|20)?\d{2}(?:[01235678]\d\d(?<!(?:000|500|36[7-9]|3[7-9]\d|86[7-9]|8[7-9]\d)))\d{4}(?:[vVxX])$", number):
