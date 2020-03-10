@@ -25,6 +25,6 @@ def bootstrap(app, db):
     # from models.StdMarks import StdMarks
     # from models.Diploma import Diploma
     
-    #db.create_all()
-    #db.session.commit()
+    # db.create_all()
+    # db.session.commit()
     pass

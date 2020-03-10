@@ -13,7 +13,7 @@ from models.Student import Student
 from models.NVQStudent import NVQStudent
 from models.ALStudent import ALStudent
 from schemas.StudentSchema import StudentSchema
-from services.extractor import extract_nvq_details, extract_al_details
+from services.extractor import extract_nvq_details, extract_al_details, validate_identity_number, validate_nvq_application_number, validate_al_application_number
 from exceptions.validations import ValidationError
 from flask_jwt import JWT, jwt_required, current_identity
 from sqlalchemy import exc
@@ -62,7 +62,7 @@ def create_applicant():
             marital_status = ""
             
         applicant =  Student(
-                        identity_no = payload['identity_no'].upper(),
+                        identity_no = validate_identity_number(payload['identity_no'].upper()),
                         student_type = student_type,
                         initials = payload['initials'].upper(),
                         surename = payload['surename'].upper(),
@@ -75,6 +75,7 @@ def create_applicant():
                         address_3 = payload['address_3'],
                         city = payload['city'],
                         district = payload['district'],
+                        permanent_district = payload['permanent_district'],
                         telephone = payload['telephone'],
                         mobile = payload['mobile'],
                         email = payload['email'],
@@ -89,7 +90,7 @@ def create_applicant():
         db.session.refresh(applicant)
         if student_type == "NVQ":
             nvq_student = NVQStudent(student_id = applicant.id,
-                                    application_no = payload['application_no'].upper(),
+                                    application_no = validate_nvq_application_number(payload['application_no'].upper()),
                                     batch_type = payload['batch_type'].upper(),
                                     index_no = payload['index_no'],
                                     diploma = payload['diploma'],
@@ -99,7 +100,7 @@ def create_applicant():
             db.session.add(nvq_student)
         elif student_type == "AL":
             al_student = ALStudent(student_id = applicant.id,
-                                    application_no = payload['application_no'].upper(),
+                                    application_no = validate_al_application_number(payload['application_no'].upper()),
                                     stream = payload['stream'].upper(),
                                     al_index_no = payload['al_index_no'],
                                     z_score = payload['z_score'],
@@ -113,6 +114,9 @@ def create_applicant():
             return jsonify({'error' : 'Invalid student type!'}), 400
 
         db.session.commit()
+    except ValidationError as e:
+        db.session().rollback()
+        return jsonify({'error': str(e)}), 400
     except exc.IntegrityError as e:
         db.session().rollback()
         return jsonify({'error' : str(e.args)}), 400
@@ -139,7 +143,7 @@ def update_applicant(number):
                 return jsonify({'error' : 'Applicant not found!'}), 400 
             applicant = Student.query.filter_by(id=al_applicant.student_id).first()
 
-        applicant.identity_no = payload['identity_no'].upper()
+        applicant.identity_no = validate_identity_number(payload['identity_no'].upper())
         applicant.student_type = student_type
         applicant.initials = payload['initials'].upper()
         applicant.surename = payload['surename'].upper()
@@ -152,6 +156,7 @@ def update_applicant(number):
         applicant.address_3 = payload['address_3']
         applicant.city = payload['city']
         applicant.district = payload['district']
+        applicant.permanent_district = payload['permanent_district']
         applicant.telephone = payload['telephone']
         applicant.mobile = payload['mobile']
         applicant.email = payload['email']
@@ -165,7 +170,7 @@ def update_applicant(number):
 
         if student_type == "NVQ":
             nvq_applicant.student_id = applicant.id
-            nvq_applicant.application_no = payload['application_no'].upper()
+            nvq_applicant.application_no = validate_nvq_application_number(payload['application_no'].upper())
             nvq_applicant.batch_type = payload['batch_type'].upper()
             nvq_applicant.index_no = payload['index_no']
             nvq_applicant.diploma = payload['diploma']
@@ -175,7 +180,7 @@ def update_applicant(number):
             db.session.add(nvq_applicant)
         elif student_type == "AL":
             al_applicant.student_id = applicant.id,
-            al_applicant.application_no = payload['application_no'].upper()
+            al_applicant.application_no = validate_al_application_number(payload['application_no'].upper())
             al_applicant.stream = payload['stream']
             al_applicant.al_index_no = payload['al_index_no']
             al_applicant.z_score = payload['z_score']
@@ -189,6 +194,10 @@ def update_applicant(number):
             return jsonify({'error' : 'Invalid student type!'}), 400
 
         db.session.commit()
+    except ValidationError as e:
+        db.session().rollback()
+        return jsonify({'error': str(e)}), 400
+        pass
     except exc.IntegrityError:
         db.session().rollback()
         return jsonify({'error' : 'Applicant already exists!'}), 400
@@ -226,6 +235,7 @@ def create_bulk_import_nvq():
                             address_2 = applicant.get('address_2'),
                             city = applicant.get('city'),
                             district = applicant.get('district'),
+                            permanent_district = applicant.get('permanent_district'),
                             telephone = applicant.get('telephone'),
                             mobile = applicant.get('mobile'),
                             email = applicant.get('email'),
@@ -289,6 +299,7 @@ def create_bulk_import_al():
                             address_2 = applicant.get('address_2'),
                             city = applicant.get('city'),
                             district = applicant.get('district'),
+                            permanent_district = applicant.get('permanent_district'),
                             telephone = applicant.get('telephone'),
                             mobile = applicant.get('mobile'),
                             email = applicant.get('email'),
