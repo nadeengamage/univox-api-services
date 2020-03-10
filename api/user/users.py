@@ -78,7 +78,11 @@ def update_user(x_id):
             if 'password' not in payload: 
                 user.password = user.password
             else: 
-                user.password = payload['password']
+                if not payload['password']:
+                    user.password = user.password
+                else:
+                    user.password = payload['password']
+
             user.firstname = payload['firstname']
             user.lastname = payload['lastname']
             user.role_id = payload['role']
