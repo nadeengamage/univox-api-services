@@ -16,7 +16,7 @@ class StdMarks(db.Model):
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
     student_id = db.Column('std_mark_student_id', db.Integer, db.ForeignKey('tbl_students.id'), unique=True, nullable=False)
     applicant = db.relationship('Student', backref='tbl_students_marks', uselist=False)
-    degree_id = db.Column('std_mark_degree_id', db.Integer, db.ForeignKey('tbl_degrees.id'), nullable=False, unique=True)
+    degree_id = db.Column('std_mark_degree_id', db.Integer, db.ForeignKey('tbl_degrees.id'), nullable=False)
     degree = db.relationship('Degree', backref='tbl_students_marks', uselist=False)
     marks = db.Column('std_marks', db.Float, nullable=False)
     remark = db.Column('extra_notice', db.Text)

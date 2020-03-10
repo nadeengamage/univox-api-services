@@ -71,7 +71,7 @@ def create_std_marks():
             return jsonify({'error' : 'Invalid applicant number!'}), 400
 
         std_marks = StdMarks(
-                    student_id = student.id,
+                    student_id = student.student_id,
                     degree_id = degree.id,
                     marks = payload['marks'],
                     remark = payload['remark'],
@@ -79,9 +79,9 @@ def create_std_marks():
                     created_by = current_identity.username)
         db.session.add(std_marks)
         db.session.commit()
-    except exc.IntegrityError:
+    except exc.IntegrityError as e:
         db.session().rollback()
-        return jsonify({'error' : 'Student Marks already exists!'}), 400
+        return jsonify({'error' : str(e.args)}), 400
         pass
 
     return jsonify({'message' : 'New Student Marks has created!'}), 200
