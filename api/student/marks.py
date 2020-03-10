@@ -10,6 +10,7 @@ from app import app, db
 from flask import jsonify, request
 from models.StdMarks import StdMarks
 from models.Student import Student
+from models.Degree import Degree
 from models.NVQStudent import NVQStudent
 from models.ALStudent import ALStudent
 from schemas.StdMarkSchema import StdMarkSchema
@@ -27,10 +28,18 @@ def get_stds_marks():
     return {'data': stdmarks_schema.dump(std_marks)}, 200
 
 # get marks by student id
-@app.route('/applicants/marks/<code>', methods=['GET'])
+@app.route('/applicants/marks/<student_type>/<path:code>', methods=['GET'])
 @jwt_required()
-def get_std_marks_by_id(code):
-    stds_marks = StdMarks.query.filter_by(student_id=code).first()
+def get_std_marks_by_id(student_type, code):
+
+    if student_type.upper() == "NVQ":
+        student = NVQStudent.query.filter_by(application_no=code.upper()).first()
+    elif student_type.upper() == "AL":
+        student = ALStudent.query.filter_by(application_no=code.upper()).first()
+    else:
+        return jsonify({'error' : 'Invalid student type!'}), 400
+            
+    stds_marks = StdMarks.query.filter_by(student_id=student.id).first()
 
     if not stds_marks:
         return {'message': 'Data not found!'}, 200    
@@ -44,7 +53,7 @@ def create_std_marks():
     try:
         payload = request.get_json()
         student_type = payload['student_type'].upper()
-        application_no = payload['application_no'].upper()
+        application_no = payload['applicant_no'].upper()
 
         if student_type == "NVQ":
             student = NVQStudent.query.filter_by(application_no=application_no).first()
@@ -55,13 +64,16 @@ def create_std_marks():
 
         degree = Degree.query.filter_by(degree_code=payload['degree_code'].upper()).first()
 
+        if not degree:
+            return jsonify({'error' : 'Invalid degree code!'}), 400
+
         std_marks = StdMarks(
-                    student_id = student.student_id,
-                    degree_id = degree.student_id,
+                    student_id = student.id,
+                    degree_id = degree.id,
                     marks = payload['marks'],
                     remark = payload['remark'],
                     status = 1,
-                    created_by = 'admin')
+                    created_by = current_identity.username)
         db.session.add(std_marks)
         db.session.commit()
     except exc.IntegrityError:
@@ -72,10 +84,18 @@ def create_std_marks():
     return jsonify({'message' : 'New Student Marks has created!'}), 200
 
 # update an student marks
-@app.route('/applicants/marks/<code>', methods=['PUT'])
+@app.route('/applicants/marks/<student_type>/<path:code>', methods=['PUT'])
 @jwt_required()
-def update_std_marks(code):
-    std_marks = StdMarks.query.filter_by(student_id=code).first()
+def update_std_marks(student_type, code):
+
+    if student_type.upper() == "NVQ":
+        student = NVQStudent.query.filter_by(application_no=code.upper()).first()
+    elif student_type.upper() == "AL":
+        student = ALStudent.query.filter_by(application_no=code.upper()).first()
+    else:
+        return jsonify({'error' : 'Invalid student type!'}), 400
+
+    std_marks = StdMarks.query.filter_by(student_id=student.id).first()
     if not std_marks:
         return {'message': 'Data not found!'}, 200
     else:
@@ -85,7 +105,7 @@ def update_std_marks(code):
             std_marks.marks = payload['marks']
             std_marks.remark = payload['remark']
             std_marks.status = payload['status']
-            std_marks.updated_by = 'admin'
+            std_marks.updated_by = current_identity.username
 
             db.session.add(std_marks)
             db.session.commit()
@@ -98,16 +118,24 @@ def update_std_marks(code):
 
 
 # delete a Student Marks
-@app.route('/applicants/marks/<code>', methods=['DELETE'])
+@app.route('/applicants/marks/<student_type>/<path:code>', methods=['DELETE'])
 @jwt_required()
-def delete_std_marks(code):
-    std_marks = StdMarks.query.filter_by(student_id=code).first()
+def delete_std_marks(student_type, code):
+
+    if student_type.upper() == "NVQ":
+        student = NVQStudent.query.filter_by(application_no=code.upper()).first()
+    elif student_type.upper() == "AL":
+        student = ALStudent.query.filter_by(application_no=code.upper()).first()
+    else:
+        return jsonify({'error' : 'Invalid student type!'}), 400
+
+    std_marks = StdMarks.query.filter_by(student_id=student.id).first()
     if not std_marks:
         return {'message': 'Data not found!'}, 200
     else:
         try:
             std_marks.status = 0
-
+            std_marks.updated_by = current_identity.username
             db.session.add(std_marks)
             db.session.commit()
         except exc.IntegrityError:
