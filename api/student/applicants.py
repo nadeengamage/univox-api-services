@@ -55,6 +55,12 @@ def create_applicant():
     try:
         payload = request.get_json()
         student_type = payload['student_type'].upper()
+
+        if student_type == "NVQ":
+            marital_status = payload['marital_status']
+        else: 
+            marital_status = ""
+            
         applicant =  Student(
                         identity_no = payload['identity_no'].upper(),
                         student_type = student_type,
@@ -62,7 +68,7 @@ def create_applicant():
                         surename = payload['surename'].upper(),
                         title = payload['title'],
                         gender = payload['gender'],
-                        marital_status = payload['marital_status'],
+                        marital_status = marital_status,
                         ethnicity = payload['ethnicity'],
                         address_1 = payload['address_1'],
                         address_2 = payload['address_2'],
