@@ -50,7 +50,8 @@ def create_user():
                     firstname = payload['firstname'],
                     lastname = payload['lastname'],
                     role_id = payload['role'],
-                    status = 1)
+                    status = 1,
+                    created_by = current_identity.username)
         db.session.add(user)
         db.session.commit()
     except exc.IntegrityError:
@@ -82,6 +83,7 @@ def update_user(x_id):
             user.lastname = payload['lastname']
             user.role_id = payload['role']
             user.status = payload['status']
+            user.updated_by = current_identity.username
 
             db.session.add(user)
             db.session.commit()
@@ -104,6 +106,7 @@ def delete_user(x_id):
         payload = request.get_json()
         try:
             user.status = 0
+            user.updated_by = current_identity.username
             db.session.add(user)
             db.session.commit()
         except exc.IntegrityError:

@@ -3,7 +3,7 @@
     @email - warunanissanka44@gmail.com
     @project - UnivoX
 
-    Description - Country controller.
+    Description - diploma Controller.
 """
 
 from app import app

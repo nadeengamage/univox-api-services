@@ -52,7 +52,7 @@ def create_degree():
                     degree_code = payload['degree_code'].upper(),
                     degree_name = payload['degree_name'],
                     status = 1,
-                    created_by = 'admin')
+                    created_by = current_identity.username)
         db.session.add(degree)
         db.session.commit()
     except exc.IntegrityError:
@@ -81,7 +81,7 @@ def update_degree(code):
             degree.degree_code = payload['degree_code']
             degree.degree_name = payload['degree_name']
             degree.status = payload['status']
-            degree.updated_by = 'admin'
+            degree.updated_by = current_identity.username
 
             db.session.add(degree)
             db.session.commit()
