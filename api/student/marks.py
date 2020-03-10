@@ -67,6 +67,9 @@ def create_std_marks():
         if not degree:
             return jsonify({'error' : 'Invalid degree code!'}), 400
 
+        if not student:
+            return jsonify({'error' : 'Invalid applicant number!'}), 400
+
         std_marks = StdMarks(
                     student_id = student.id,
                     degree_id = degree.id,
@@ -94,6 +97,9 @@ def update_std_marks(student_type, code):
         student = ALStudent.query.filter_by(application_no=code.upper()).first()
     else:
         return jsonify({'error' : 'Invalid student type!'}), 400
+
+    if not student:
+            return jsonify({'error' : 'Invalid applicant number!'}), 400
 
     std_marks = StdMarks.query.filter_by(student_id=student.id).first()
     if not std_marks:

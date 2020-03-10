@@ -100,7 +100,7 @@ def create_applicant():
         elif student_type == "AL":
             al_student = ALStudent(student_id = applicant.id,
                                     application_no = payload['application_no'].upper(),
-                                    stream = payload['stream'],
+                                    stream = payload['stream'].upper(),
                                     al_index_no = payload['al_index_no'],
                                     z_score = payload['z_score'],
                                     al_ict = payload['al_ict'],
@@ -113,10 +113,9 @@ def create_applicant():
             return jsonify({'error' : 'Invalid student type!'}), 400
 
         db.session.commit()
-    except exc.IntegrityError:
+    except exc.IntegrityError as e:
         db.session().rollback()
-        return jsonify({'error' : 'Applicant already exists!'}), 400
-        pass
+        return jsonify({'error' : str(e.args)}), 400
 
     return jsonify({'message' : 'New applicant has created!'}), 200
 
