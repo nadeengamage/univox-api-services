@@ -20,4 +20,4 @@ class StudentSchema(ma.Schema):
 
   class Meta:
     model = Student
-    fields = ('nvq_details', 'al_details', 'identity_no', 'student_type', 'initials', 'surename', 'title', 'gender', 'ethnicity', 'address_1', 'address_2', 'city', 'district', 'permanent_district','telephone', 'mobile', 'email', 'preference_1', 'preference_2', 'preference_3', 'status')
+    fields = ('nvq_details', 'al_details', 'identity_no', 'student_type', 'marital_status', 'initials', 'surename', 'title', 'gender', 'ethnicity', 'address_1', 'address_2', 'address_3', 'city', 'district', 'permanent_district','telephone', 'mobile', 'email', 'preference_1', 'preference_2', 'preference_3', 'status')
