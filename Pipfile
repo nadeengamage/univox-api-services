@@ -7,13 +7,18 @@ verify_ssl = true
 
 [packages]
 appdirs = "*"
+bcrypt = "*"
 certifi = "*"
 Click = "*"
 distlib = "*"
 filelock = "*"
 Flask = "*"
+Flask-JWT = "*"
+flask-jsonschema-validator = "*"
+PyMySQL = "*"
 flask-marshmallow = "*"
 Flask-SQLAlchemy = "*"
+Flask-Cors = "*"
 importlib-metadata = "*"
 itsdangerous = "*"
 Jinja2 = "*"
