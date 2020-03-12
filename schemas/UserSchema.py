@@ -17,7 +17,7 @@ class UserSchema(ma.Schema):
   roles = ma.Nested(RoleSchema)
 
   class Meta:
-    fields = ('x_id', 'username', 'firstname', 'lastname', 'role_id', 'status', 'roles')
+    fields = ('x_id', 'username', 'firstname', 'lastname', 'role_code', 'status', 'roles')
 
 def extractor():
     payload = request.get_json()
