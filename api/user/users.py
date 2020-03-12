@@ -49,7 +49,7 @@ def create_user():
                     password = payload['password'],
                     firstname = payload['firstname'],
                     lastname = payload['lastname'],
-                    role_id = payload['role'],
+                    role_code = payload['role'],
                     status = 1,
                     created_by = current_identity.username)
         db.session.add(user)
@@ -85,7 +85,7 @@ def update_user(x_id):
 
             user.firstname = payload['firstname']
             user.lastname = payload['lastname']
-            user.role_id = payload['role']
+            user.role_code = payload['role']
             user.status = payload['status']
             user.updated_by = current_identity.username
 
