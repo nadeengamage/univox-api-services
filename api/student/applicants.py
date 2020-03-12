@@ -27,14 +27,14 @@ students_schema = StudentSchema(many=True)
 @app.route('/applicants/nvq/details', methods=['GET'])
 @jwt_required()
 def get_nvq_applicants():
-    applicants = Student.query.filter_by(student_type='NVQ').all()
+    applicants = Student.query.filter_by(student_type='NVQ').order_by(Student.id.desc()).all()
     return {'data': students_schema.dump(applicants)}, 200
 
 # get all al applicants
 @app.route('/applicants/al/details', methods=['GET'])
 @jwt_required()
 def get_al_applicants():
-    applicants = Student.query.filter_by(student_type='AL').all()
+    applicants = Student.query.filter_by(student_type='AL').order_by(Student.id.desc()).all()
     return {'data': students_schema.dump(applicants)}, 200
 
 # get by id

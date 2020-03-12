@@ -10,6 +10,7 @@
 from app import app, db
 from flask import jsonify, request
 from models.User import User
+from models.Role import Role
 from schemas.UserSchema import UserSchema, extractor
 from services.auth import get_auth_user
 from flask_jwt import JWT, jwt_required, current_identity
@@ -42,14 +43,19 @@ def get_user_by_x_id(x_id):
 @app.validate( 'users', 'users')
 @jwt_required()
 def create_user():
+    payload = request.get_json()
+    role = Role.query.filter_by(role_code=payload['role'].upper()).first()
+
+    if not role:
+        return jsonify({'error' : 'Role not found!'}), 400
+
     try:
-        payload = request.get_json()
         user =  User(x_id = str(uuid.uuid4()),
                     username = payload['username'],
                     password = payload['password'],
                     firstname = payload['firstname'],
                     lastname = payload['lastname'],
-                    role_id = payload['role'],
+                    role_code = role.role_code,
                     status = 1,
                     created_by = current_identity.username)
         db.session.add(user)
@@ -57,7 +63,6 @@ def create_user():
     except exc.IntegrityError:
         db.session().rollback()
         return jsonify({'error' : 'User already exists!'}), 400
-        pass
 
     return jsonify({'message' : 'New user created!'}), 200
 
@@ -66,13 +71,16 @@ def create_user():
 @app.validate('users_update', 'users')
 @jwt_required()
 def update_user(x_id):
-    user = User.query.filter_by(x_id=x_id).first()
     
+    payload = request.get_json()
+    role = Role.query.filter_by(role_code=payload['role'].upper()).first()
+    if not role:
+        return jsonify({'error' : 'Role not found!'}), 400
+
+    user = User.query.filter_by(x_id=x_id).first()
     if not user: 
         return {'message': 'Data not found!'}, 200 
     else:
-        payload = request.get_json()
-
         try:
             user.username = payload['username']
             if 'password' not in payload: 
@@ -85,7 +93,7 @@ def update_user(x_id):
 
             user.firstname = payload['firstname']
             user.lastname = payload['lastname']
-            user.role_id = payload['role']
+            user.role_code = payload['role']
             user.status = payload['status']
             user.updated_by = current_identity.username
 
