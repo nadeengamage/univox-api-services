@@ -28,6 +28,10 @@ def get_faculties():
 @app.route('/faculties/<code>', methods=['GET'])
 @jwt_required()
 def get_faculty_by_code(code):
+
+    if not code: 
+        return {'message': 'Faculty code is required!'}, 200 
+        
     faculty = Faculty.query.filter_by(faculty_code=code.upper()).first()
 
     if not faculty:
@@ -60,6 +64,10 @@ def create_faculty():
 @app.route('/faculties/<code>', methods=['PUT'])
 @jwt_required()
 def update_faculty(code):
+
+    if not code: 
+        return {'message': 'Faculty code is required!'}, 200 
+
     faculty = Faculty.query.filter_by(faculty_code=code.upper()).first()
     
     if not faculty: 
@@ -87,6 +95,10 @@ def update_faculty(code):
 @app.route('/faculties/<code>', methods=['DELETE'])
 @jwt_required()
 def delete_faculty(code):
+
+    if not code: 
+        return {'message': 'Faculty code is required!'}, 200 
+
     faculty = Faculty.query.filter_by(faculty_code=code.upper()).first()
     if not faculty: 
         return {'message': 'Data not found!'}, 200 
