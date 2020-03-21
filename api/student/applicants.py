@@ -15,7 +15,7 @@ from models.ALStudent import ALStudent
 from schemas.StudentSchema import StudentSchema
 from services.extractor import extract_nvq_details, extract_al_details, validate_identity_number, validate_nvq_application_number, validate_al_application_number
 from exceptions.validations import ValidationError
-from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import exc
 import io
 import csv
@@ -25,21 +25,21 @@ students_schema = StudentSchema(many=True)
 
 # get all nvq applicants
 @app.route('/applicants/nvq/details', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_nvq_applicants():
     applicants = Student.query.filter_by(student_type='NVQ').order_by(Student.id.desc()).all()
     return {'data': students_schema.dump(applicants)}, 200
 
 # get all al applicants
 @app.route('/applicants/al/details', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_al_applicants():
     applicants = Student.query.filter_by(student_type='AL').order_by(Student.id.desc()).all()
     return {'data': students_schema.dump(applicants)}, 200
 
 # get by id
 @app.route('/applicants/<code>', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_student_by_code(code):
     degree = Student.query.filter_by(student_code=code).first()
 
@@ -50,7 +50,7 @@ def get_student_by_code(code):
 
 # create an degree
 @app.route('/applicants', methods=['POST'])
-@jwt_required()
+@jwt_required
 def create_applicant():
     try:
         payload = request.get_json()
@@ -83,7 +83,7 @@ def create_applicant():
                         preference_2 = payload['preference_2'],
                         preference_3 = payload['preference_3'],
                         status = 1,
-                        created_by = current_identity.username)
+                        created_by = get_jwt_identity())
 
         db.session.add(applicant)
         db.session.flush()
@@ -96,7 +96,7 @@ def create_applicant():
                                     diploma = payload['diploma'],
                                     remarks = payload['remarks'],
                                     permenent_address = payload['permenent_address'],
-                                    created_by = current_identity.username)
+                                    created_by = get_jwt_identity())
             db.session.add(nvq_student)
         elif student_type == "AL":
             al_student = ALStudent(student_id = applicant.id,
@@ -108,7 +108,7 @@ def create_applicant():
                                     comm_and_media = payload['comm_and_media'],
                                     general_english = payload['general_english'],
                                     general_common_test = payload['general_common_test'],
-                                    created_by = current_identity.username)
+                                    created_by = get_jwt_identity())
             db.session.add(al_student)
         else:
             return jsonify({'error' : 'Invalid student type!'}), 400
@@ -125,7 +125,7 @@ def create_applicant():
 
 # update an degree
 @app.route('/applicants/<path:number>', methods=['PUT'])
-@jwt_required()
+@jwt_required
 def update_applicant(number):
     try:
         payload = request.get_json()
@@ -164,7 +164,7 @@ def update_applicant(number):
         applicant.preference_2 = payload['preference_2']
         applicant.preference_3 = payload['preference_3']
         applicant.status = payload['status']
-        applicant.updated_by = current_identity.username
+        applicant.updated_by = get_jwt_identity()
 
         db.session.add(applicant)
 
@@ -176,7 +176,7 @@ def update_applicant(number):
             nvq_applicant.diploma = payload['diploma']
             nvq_applicant.remarks = payload['remarks']
             nvq_applicant.permenent_address = payload['permenent_address']
-            nvq_applicant.updated_by = current_identity.username
+            nvq_applicant.updated_by = get_jwt_identity()
             db.session.add(nvq_applicant)
         elif student_type == "AL":
             al_applicant.student_id = applicant.id,
@@ -188,7 +188,7 @@ def update_applicant(number):
             al_applicant.comm_and_media = payload['comm_and_media']
             al_applicant.general_english = payload['general_english']
             al_applicant.general_common_test = payload['general_common_test']
-            al_applicant.updated_by = current_identity.username
+            al_applicant.updated_by = get_jwt_identity()
             db.session.add(al_applicant)
         else:
             return jsonify({'error' : 'Invalid student type!'}), 400
@@ -207,7 +207,7 @@ def update_applicant(number):
 
 # nvq students bulk import
 @app.route('/applicants/transform/nvq_students', methods=["POST"])
-@jwt_required()
+@jwt_required
 def create_bulk_import_nvq():
     input_file = request.files.get('files')
 
@@ -243,7 +243,7 @@ def create_bulk_import_nvq():
                             preference_2 = applicant.get('preference_2'),
                             preference_3 = applicant.get('preference_3'),
                             status = 1,
-                            created_by = current_identity.username)
+                            created_by = get_jwt_identity())
 
             db.session.add(applicant_details)
             db.session.flush()
@@ -255,7 +255,7 @@ def create_bulk_import_nvq():
                                     diploma = applicant.get('diploma'),
                                     remarks = applicant.get('remarks'),
                                     permenent_address = applicant.get('permenent_address'),
-                                    created_by = current_identity.username)
+                                    created_by = get_jwt_identity())
             db.session.add(nvq_student)
 
             db.session.commit()
@@ -271,7 +271,7 @@ def create_bulk_import_nvq():
 
 # al student bulk import
 @app.route('/applicants/transform/al_students', methods=["POST"])
-@jwt_required()
+@jwt_required
 def create_bulk_import_al():
     input_file = request.files.get('files')
 
@@ -307,7 +307,7 @@ def create_bulk_import_al():
                             preference_2 = applicant.get('preference_2'),
                             preference_3 = applicant.get('preference_3'),
                             status = 1,
-                            created_by = current_identity.username)
+                            created_by = get_jwt_identity())
 
             db.session.add(applicant_details)
             db.session.flush()
@@ -322,7 +322,7 @@ def create_bulk_import_al():
                                     comm_and_media = applicant.get('comm_media_grade'),
                                     general_english = applicant.get('gen_eng_grade'),
                                     general_common_test = applicant.get('com_gen_test_grade'),
-                                    created_by = current_identity.username)
+                                    created_by = get_jwt_identity())
             db.session.add(al_student)
 
             db.session.commit()

@@ -10,7 +10,7 @@ from app import app
 from flask import jsonify
 from models.District import District
 from schemas.DistrictSchema import DistrictSchema
-from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 district_schema = DistrictSchema()
 districts_schema = DistrictSchema(many=True)
@@ -23,7 +23,7 @@ def get_districts():
 
 # get by district code
 @app.route('/districts/<district_code>', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_district_by_code(district_code):
     district = District.query.filter_by(district_code=district_code).first()
 

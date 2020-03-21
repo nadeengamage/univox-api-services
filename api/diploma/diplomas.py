@@ -10,7 +10,7 @@ from app import app, db
 from flask import jsonify, request
 from models.Diploma import Diploma
 from schemas.DiplomaSchema import DiplomaSchema
-from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import exc
 
 diploma_schema = DiplomaSchema()
@@ -18,14 +18,14 @@ diplomas_schema = DiplomaSchema(many=True)
 
 # get all diploma
 @app.route('/diplomas', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_diplomas():
     diplomas = Diploma.query.all()
     return {'data': diplomas_schema.dump(diplomas)}, 200
 
 # get by id
 @app.route('/diplomas/<code>', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_diploma_by_code(code):
     diploma = Diploma.query.filter_by(dip_code=code.upper()).first()
 
@@ -36,7 +36,7 @@ def get_diploma_by_code(code):
 
 # create an diploma
 @app.route('/diplomas', methods=['POST'])
-@jwt_required()
+@jwt_required
 def create_diploma():
     try:
         payload = request.get_json()
@@ -46,7 +46,7 @@ def create_diploma():
                     dip_name = payload['dip_name'],
                     duration = payload['duration'],
                     status = 1,
-                    created_by = 'admin')
+                    created_by = get_jwt_identity())
         db.session.add(diploma)
         db.session.commit()
     except exc.IntegrityError:
@@ -58,7 +58,7 @@ def create_diploma():
 
 # update an diploma
 @app.route('/diplomas/<code>', methods=['PUT'])
-@jwt_required()
+@jwt_required
 def update_diploma(code):
     diploma = Diploma.query.filter_by(dip_code=code.upper()).first()
     if not diploma:
@@ -71,7 +71,7 @@ def update_diploma(code):
             diploma.dip_name = payload['dip_name']
             diploma.duration = payload['duration']
             diploma.status = payload['status']
-            diploma.updated_by = 'admin'
+            diploma.updated_by = get_jwt_identity()
 
             db.session.add(diploma)
             db.session.commit()
@@ -84,7 +84,7 @@ def update_diploma(code):
 
 # delete an diploma
 @app.route('/diplomas/<code>', methods=['DELETE'])
-@jwt_required()
+@jwt_required
 def delete_diploma(code):
     diploma = Diploma.query.filter_by(dip_code=code.upper()).first()
     if not diploma:
