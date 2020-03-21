@@ -11,7 +11,7 @@ from app import app, db
 from flask import jsonify, request
 from models.Faculty import Faculty
 from schemas.FacultySchema import FacultySchema
-from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import exc
 
 faculty_schema = FacultySchema()
@@ -19,14 +19,14 @@ faculties_schema = FacultySchema(many=True)
 
 # get all faculties
 @app.route('/faculties', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_faculties():
     faculties = Faculty.query.filter_by().all()
     return {'data': faculties_schema.dump(faculties)}, 200
 
 # get by id
 @app.route('/faculties/<code>', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_faculty_by_code(code):
 
     if not code: 
@@ -41,7 +41,7 @@ def get_faculty_by_code(code):
 
 # create an faculty
 @app.route('/faculties', methods=['POST'])
-@jwt_required()
+@jwt_required
 def create_faculty():
     try:
         payload = request.get_json()
@@ -49,7 +49,7 @@ def create_faculty():
                     faculty_code = payload['faculty_code'].upper(),
                     faculty_name = payload['faculty_name'],
                     status = 1,
-                    created_by = current_identity.username)
+                    created_by = get_jwt_identity())
 
         db.session.add(faculty)
         db.session.commit()
@@ -62,7 +62,7 @@ def create_faculty():
 
 # update an faculty
 @app.route('/faculties/<code>', methods=['PUT'])
-@jwt_required()
+@jwt_required
 def update_faculty(code):
 
     if not code: 
@@ -79,7 +79,7 @@ def update_faculty(code):
             Faculty.faculty_code = payload['faculty_code'].upper()
             Faculty.faculty_name = payload['faculty_name']
             Faculty.status = payload['status']
-            Faculty.updated_by = current_identity.username
+            Faculty.updated_by = get_jwt_identity()
 
             db.session.add(faculty)
             db.session.commit()
@@ -93,7 +93,7 @@ def update_faculty(code):
 
 # delete faculty
 @app.route('/faculties/<code>', methods=['DELETE'])
-@jwt_required()
+@jwt_required
 def delete_faculty(code):
 
     if not code: 

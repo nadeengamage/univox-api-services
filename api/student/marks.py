@@ -14,7 +14,7 @@ from models.Degree import Degree
 from models.NVQStudent import NVQStudent
 from models.ALStudent import ALStudent
 from schemas.StdMarkSchema import StdMarkSchema
-from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import exc
 
 stdmark_schema = StdMarkSchema()
@@ -22,14 +22,14 @@ stdmarks_schema = StdMarkSchema(many=True)
 
 # get all applicants marks
 @app.route('/applicants/marks', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_stds_marks():
     std_marks = StdMarks.query.all()
     return {'data': stdmarks_schema.dump(std_marks)}, 200
 
 # get marks by student id
 @app.route('/applicants/marks/<student_type>/<path:code>', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_std_marks_by_id(student_type, code):
 
     if student_type.upper() == "NVQ":
@@ -48,7 +48,7 @@ def get_std_marks_by_id(student_type, code):
 
 # create an applicant marks
 @app.route('/applicants/marks', methods=['POST'])
-@jwt_required()
+@jwt_required
 def create_std_marks():
     try:
         payload = request.get_json()
@@ -76,7 +76,7 @@ def create_std_marks():
                     marks = payload['marks'],
                     remark = payload['remark'],
                     status = 1,
-                    created_by = current_identity.username)
+                    created_by = get_jwt_identity())
         db.session.add(std_marks)
         db.session.commit()
     except exc.IntegrityError as e:
@@ -88,7 +88,7 @@ def create_std_marks():
 
 # update an student marks
 @app.route('/applicants/marks/<student_type>/<path:code>', methods=['PUT'])
-@jwt_required()
+@jwt_required
 def update_std_marks(student_type, code):
 
     if student_type.upper() == "NVQ":
@@ -111,7 +111,7 @@ def update_std_marks(student_type, code):
             std_marks.marks = payload['marks']
             std_marks.remark = payload['remark']
             std_marks.status = payload['status']
-            std_marks.updated_by = current_identity.username
+            std_marks.updated_by = get_jwt_identity()
 
             db.session.add(std_marks)
             db.session.commit()
@@ -125,7 +125,7 @@ def update_std_marks(student_type, code):
 
 # delete a Student Marks
 @app.route('/applicants/marks/<student_type>/<path:code>', methods=['DELETE'])
-@jwt_required()
+@jwt_required
 def delete_std_marks(student_type, code):
 
     if student_type.upper() == "NVQ":
@@ -141,7 +141,7 @@ def delete_std_marks(student_type, code):
     else:
         try:
             std_marks.status = 0
-            std_marks.updated_by = current_identity.username
+            std_marks.updated_by = get_jwt_identity()
             db.session.add(std_marks)
             db.session.commit()
         except exc.IntegrityError:

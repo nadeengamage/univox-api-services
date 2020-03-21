@@ -7,6 +7,9 @@
     Description - Load all sub modules in the project.
 """
 
+# Auth
+from api.auth import auth
+
 # Role
 from api.user import roles 
 

@@ -11,7 +11,7 @@ from flask import jsonify, request
 from models.Degree import Degree
 from models.Faculty import Faculty
 from schemas.DegreeSchema import DegreeSchema
-from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import exc
 
 degree_schema = DegreeSchema()
@@ -19,14 +19,14 @@ degrees_schema = DegreeSchema(many=True)
 
 # get all degrees
 @app.route('/degrees', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_degrees():
     degrees = Degree.query.filter_by().all()
     return {'data': degrees_schema.dump(degrees)}, 200
 
 # get by id
 @app.route('/degrees/<code>', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_degree_by_code(code):
     degree = Degree.query.filter_by(degree_code=code).first()
 
@@ -37,7 +37,7 @@ def get_degree_by_code(code):
 
 # create an degree
 @app.route('/degrees', methods=['POST'])
-@jwt_required()
+@jwt_required
 def create_degree():
     try:
         payload = request.get_json()
@@ -52,7 +52,7 @@ def create_degree():
                     degree_code = payload['degree_code'].upper(),
                     degree_name = payload['degree_name'],
                     status = 1,
-                    created_by = current_identity.username)
+                    created_by = get_jwt_identity())
         db.session.add(degree)
         db.session.commit()
     except exc.IntegrityError:
@@ -64,7 +64,7 @@ def create_degree():
 
 # update an degree
 @app.route('/degrees/<code>', methods=['PUT'])
-@jwt_required()
+@jwt_required
 def update_degree(code):
     degree = Degree.query.filter_by(degree_code=code).first()
     
@@ -81,7 +81,7 @@ def update_degree(code):
             degree.degree_code = payload['degree_code']
             degree.degree_name = payload['degree_name']
             degree.status = payload['status']
-            degree.updated_by = current_identity.username
+            degree.updated_by = get_jwt_identity()
 
             db.session.add(degree)
             db.session.commit()
@@ -95,7 +95,7 @@ def update_degree(code):
 
 # delete degree
 @app.route('/degrees/<code>', methods=['DELETE'])
-@jwt_required()
+@jwt_required
 def delete_degree(code):
     degree = Degree.query.filter_by(degree_code=code.upper()).first()
     if not degree: 

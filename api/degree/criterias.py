@@ -12,7 +12,7 @@ from flask import jsonify, request
 from models.Criteria import Criteria
 from models.Degree import Degree
 from schemas.CriteriaSchema import CriteriaSchema
-from flask_jwt import JWT, jwt_required, current_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import exc
 
 criteria_schema = CriteriaSchema()
@@ -20,14 +20,14 @@ criterias_schema = CriteriaSchema(many=True)
 
 # get all criterias
 @app.route('/criterias', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_criterias():
     criterias = Criteria.query.filter_by(status=1).all()
     return {'data': criterias_schema.dump(criterias)}, 200
 
 # get by id
 @app.route('/criterias/<code>', methods=['GET'])
-@jwt_required()
+@jwt_required
 def get_criteria_by_code(code):
     degree = Degree.query.filter_by(degree_code=code.upper()).first()
 
@@ -43,7 +43,7 @@ def get_criteria_by_code(code):
 
 # create an criteria
 @app.route('/criterias', methods=['POST'])
-@jwt_required()
+@jwt_required
 def create_criteria():
     try:
         payload = request.get_json()
@@ -62,7 +62,7 @@ def create_criteria():
                     btch_one_cut_off_mark = payload['btch_one_cut_off_mark'],
                     btch_two_cut_off_mark = payload['btch_two_cut_off_mark'],
                     status = 1,
-                    created_by = current_identity.username)
+                    created_by = get_jwt_identity())
         db.session.add(criteria)
         db.session.commit()
     except exc.IntegrityError:
@@ -74,7 +74,7 @@ def create_criteria():
 
 # update an criteria
 @app.route('/criterias/<code>', methods=['PUT'])
-@jwt_required()
+@jwt_required
 def update_criteria(code):
     degree = Degree.query.filter_by(degree_code=code.upper()).first()
 
@@ -97,7 +97,7 @@ def update_criteria(code):
                 criteria.btch_one_cut_off_mark = payload['btch_one_cut_off_mark']
                 criteria.btch_two_cut_off_mark = payload['btch_two_cut_off_mark']
                 criteria.status = payload['status']
-                criteria.updated_by = current_identity.username
+                criteria.updated_by = get_jwt_identity()
 
                 db.session.add(criteria)
                 db.session.commit()
@@ -110,7 +110,7 @@ def update_criteria(code):
 
 # delete criteria
 @app.route('/criterias/<code>', methods=['DELETE'])
-@jwt_required()
+@jwt_required
 def delete_criteria(code):
     degree = Degree.query.filter_by(degree_code=code.upper()).first()
 
@@ -123,7 +123,7 @@ def delete_criteria(code):
         else:
             try:
                 criteria.status = 0
-                criteria.updated_by = current_identity.username
+                criteria.updated_by = get_jwt_identity()
                 db.session.add(criteria)
                 db.session.commit()
             except exc.IntegrityError:

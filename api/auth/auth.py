@@ -1,0 +1,44 @@
+"""
+    @author - Nadeen Gamage
+    @email - nadeengamage@gmail.com
+    @web - www.nadeengamage.com
+    @project - UnivoX
+
+    Description - Authentication manager.
+"""
+
+from app import app, jwt
+from flask import Flask, jsonify, request
+from flask_jwt_extended import create_access_token
+from models.User import User
+from schemas.UserSchema import UserSchema
+from services.auth import authenticate
+
+# Claims the user detils in the access token
+@jwt.user_claims_loader
+def add_claims_to_access_token(identity):
+    user = User.query.filter_by(username=identity).first()
+    return {
+        'roles': UserSchema().dump(user)
+    }
+
+# Provide a method to create access tokens. The create_access_token()
+# function is used to actually generate the token.
+@app.route('/auth', methods=['POST'])
+def authentication():
+    if not request.is_json:
+        return jsonify({"error": "Missing JSON in request!"}), 400
+
+    username = request.json.get('username', None)
+    password = request.json.get('password', None)
+    if not username:
+        return jsonify({"error": "Missing username parameter!"}), 400
+    if not password:
+        return jsonify({"error": "Missing password parameter!"}), 400
+
+    if not authenticate(username, password):
+        return jsonify({"error": "Invalid username or password!"}), 401
+
+    # Identity can be any data that is json serializable
+    access_token = create_access_token(identity=username)
+    return jsonify(access_token=access_token), 200

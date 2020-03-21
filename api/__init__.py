@@ -41,7 +41,7 @@ def create_app():
     CORS(app)
 
     # Authentication 
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+    app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')
 
     # Database
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
