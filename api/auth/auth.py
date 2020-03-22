@@ -13,7 +13,7 @@ from flask_jwt_extended import create_access_token
 from models.User import User
 from schemas.UserSchema import UserSchema
 from services.auth import authenticate
-from datetime import datetime
+import datetime
 
 # Claims the user detils in the access token
 @jwt.user_claims_loader
