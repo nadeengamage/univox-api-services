@@ -23,7 +23,7 @@ criterias_schema = CriteriaSchema(many=True)
 @jwt_required
 def get_criterias():
     criterias = Criteria.query.filter_by(status=1).all()
-    return {'data': criterias_schema.dump(criterias)}, 200
+    return {'data': criterias_schema.dump(criterias),'status': 200}, 200
 
 # get by id
 @app.route('/criterias/<code>', methods=['GET'])
@@ -32,14 +32,14 @@ def get_criteria_by_code(code):
     degree = Degree.query.filter_by(degree_code=code.upper()).first()
 
     if not degree:
-        return {'message': 'Data not found!'}, 200
+        return {'message': 'Data not found!','status': 404}, 404
     else:
         criteria = Criteria.query.filter_by(degree_id=degree.id).first()
 
         if not criteria:
-            return {'message': 'Data not found!'}, 200    
+            return {'message': 'Data not found!','status': 404}, 404    
 
-    return {'data': criteria_schema.dump(criteria)}, 200
+    return {'data': criteria_schema.dump(criteria),'status': 200}, 200
 
 # create an criteria
 @app.route('/criterias', methods=['POST'])
@@ -51,7 +51,7 @@ def create_criteria():
         degree = Degree.query.filter_by(degree_code=payload['degree_code'].upper()).first()
 
         if not degree:
-            return {'message': 'Data not found!'}, 200
+            return {'message': 'Data not found!','status': 404}, 404
 
         criteria =  Criteria(
                     degree_id = degree.id,
@@ -67,10 +67,10 @@ def create_criteria():
         db.session.commit()
     except exc.IntegrityError:
         db.session().rollback()
-        return jsonify({'error' : 'Criteria already exists!'}), 400
+        return jsonify({'error' : 'Criteria already exists!','status': 400}), 400
         pass
 
-    return jsonify({'message' : 'New criteria has created!'}), 200
+    return jsonify({'message' : 'New criteria has created!','status': 200}), 200
 
 # update an criteria
 @app.route('/criterias/<code>', methods=['PUT'])
@@ -79,12 +79,12 @@ def update_criteria(code):
     degree = Degree.query.filter_by(degree_code=code.upper()).first()
 
     if not degree:
-        return {'message': 'Data not found!'}, 200
+        return {'message': 'Data not found!','status': 404}, 404
     else:
         criteria = Criteria.query.filter_by(degree_id=degree.id).first()
         
         if not criteria: 
-            return {'message': 'Data not found!'}, 200 
+            return {'message': 'Data not found!','status': 404}, 404 
         else:
             payload = request.get_json()
 
@@ -103,10 +103,10 @@ def update_criteria(code):
                 db.session.commit()
             except exc.IntegrityError:
                 db.session().rollback()
-                return jsonify({'error' : 'Something error!'}), 400
+                return jsonify({'error' : 'Something error!','status': 400}), 400
                 pass
 
-    return jsonify({'message' : 'Criteria has been updated!'}), 200
+    return jsonify({'message' : 'Criteria has been updated!','status': 200}), 200
 
 # delete criteria
 @app.route('/criterias/<code>', methods=['DELETE'])
@@ -115,11 +115,11 @@ def delete_criteria(code):
     degree = Degree.query.filter_by(degree_code=code.upper()).first()
 
     if not degree:
-        return {'message': 'Data not found!'}, 200
+        return {'message': 'Data not found!','status': 404}, 404
     else:
         criteria = Criteria.query.filter_by(degree_id=degree.id).first()
         if not criteria: 
-            return {'message': 'Data not found!'}, 200 
+            return {'message': 'Data not found!','status': 404}, 404 
         else:
             try:
                 criteria.status = 0
@@ -128,7 +128,7 @@ def delete_criteria(code):
                 db.session.commit()
             except exc.IntegrityError:
                 db.session().rollback()
-                return jsonify({'error' : 'Something error!'}), 400
+                return jsonify({'error' : 'Something error!','status': 400}), 400
                 pass
 
-    return jsonify({'message' : 'Criteria has been deleted!'}), 200
+    return jsonify({'message' : 'Criteria has been deleted!','status': 200}), 200

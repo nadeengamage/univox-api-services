@@ -28,14 +28,14 @@ students_schema = StudentSchema(many=True)
 @jwt_required
 def get_nvq_applicants():
     applicants = Student.query.filter_by(student_type='NVQ').order_by(Student.id.desc()).all()
-    return {'data': students_schema.dump(applicants)}, 200
+    return {'data': students_schema.dump(applicants),'status': 200}, 200
 
 # get all al applicants
 @app.route('/applicants/al/details', methods=['GET'])
 @jwt_required
 def get_al_applicants():
     applicants = Student.query.filter_by(student_type='AL').order_by(Student.id.desc()).all()
-    return {'data': students_schema.dump(applicants)}, 200
+    return {'data': students_schema.dump(applicants),'status': 200}, 200
 
 # get by id
 @app.route('/applicants/<code>', methods=['GET'])
@@ -44,9 +44,9 @@ def get_student_by_code(code):
     degree = Student.query.filter_by(student_code=code).first()
 
     if not degree:
-        return {'message': 'Data not found!'}, 200    
+        return {'message': 'Data not found!','status': 404}, 404    
 
-    return {'data': student_schema.dump(degree)}, 200
+    return {'data': student_schema.dump(degree),'status': 200}, 200
 
 # create an degree
 @app.route('/applicants', methods=['POST'])
@@ -111,17 +111,17 @@ def create_applicant():
                                     created_by = get_jwt_identity())
             db.session.add(al_student)
         else:
-            return jsonify({'error' : 'Invalid student type!'}), 400
+            return jsonify({'error' : 'Invalid student type!','status': 400}), 400
 
         db.session.commit()
     except ValidationError as e:
         db.session().rollback()
-        return jsonify({'error': str(e)}), 400
+        return jsonify({'error': str(e),'status': 400}), 400
     except exc.IntegrityError as e:
         db.session().rollback()
-        return jsonify({'error' : str(e.args)}), 400
+        return jsonify({'error' : str(e.args),'status': 400}), 400
 
-    return jsonify({'message' : 'New applicant has created!'}), 200
+    return jsonify({'message' : 'New applicant has created!','status': 200}), 200
 
 # update an degree
 @app.route('/applicants/<path:number>', methods=['PUT'])
@@ -134,13 +134,13 @@ def update_applicant(number):
         if student_type == "NVQ":
             nvq_applicant = NVQStudent.query.filter_by(application_no=number.upper()).first()
             if not nvq_applicant:
-                return jsonify({'error' : 'Applicant not found!'}), 400 
+                return jsonify({'error' : 'Applicant not found!','status': 404}), 404 
 
             applicant = Student.query.filter_by(id=nvq_applicant.student_id).first()
         else:
             al_applicant = ALStudent.query.filter_by(application_no=number.upper()).first()
             if not al_applicant:
-                return jsonify({'error' : 'Applicant not found!'}), 400 
+                return jsonify({'error' : 'Applicant not found!','status': 404}), 404 
             applicant = Student.query.filter_by(id=al_applicant.student_id).first()
 
         applicant.identity_no = validate_identity_number(payload['identity_no'].upper())
@@ -191,19 +191,19 @@ def update_applicant(number):
             al_applicant.updated_by = get_jwt_identity()
             db.session.add(al_applicant)
         else:
-            return jsonify({'error' : 'Invalid student type!'}), 400
+            return jsonify({'error' : 'Invalid student type!','status': 400}), 400
 
         db.session.commit()
     except ValidationError as e:
         db.session().rollback()
-        return jsonify({'error': str(e)}), 400
+        return jsonify({'error': str(e),'status': 400}), 400
         pass
     except exc.IntegrityError:
         db.session().rollback()
-        return jsonify({'error' : 'Applicant already exists!'}), 400
+        return jsonify({'error' : 'Applicant already exists!','status': 400}), 400
         pass
 
-    return jsonify({'message' : 'Applicant has updated!'}), 200
+    return jsonify({'message' : 'Applicant has updated!','status': 200}), 200
 
 # nvq students bulk import
 @app.route('/applicants/transform/nvq_students', methods=["POST"])
@@ -212,14 +212,14 @@ def create_bulk_import_nvq():
     input_file = request.files.get('files')
 
     if not input_file:
-        return jsonify({'error': 'CSV file is required'}), 400
+        return jsonify({'error': 'CSV file is required','status': 400}), 400
     
     try:
         stream = io.StringIO(input_file.stream.read().decode("UTF8"), newline=None)
         csv_input = csv.reader(stream)
 
         if not csv_input:
-            return jsonify({'error': 'CSV file is required'}), 400
+            return jsonify({'error': 'CSV file is required','status': 400}), 400
 
         applicants = extract_nvq_details([row for row in csv_input])  
         for applicant in applicants:
@@ -260,14 +260,14 @@ def create_bulk_import_nvq():
 
             db.session.commit()
     except ValidationError as e:
-        return jsonify({'error': str(e)}), 400
+        return jsonify({'error': str(e),'status': 400}), 400
         pass
     except exc.IntegrityError as e:
         db.session().rollback()
-        return jsonify({'error' : str(e.args)}), 400
+        return jsonify({'error' : str(e.args),'status': 400}), 400
         pass
     
-    return jsonify({'message' : 'Bulk import succeeded!'}), 200
+    return jsonify({'message' : 'Bulk import succeeded!','status': 200}), 200
 
 # al student bulk import
 @app.route('/applicants/transform/al_students', methods=["POST"])
@@ -276,14 +276,14 @@ def create_bulk_import_al():
     input_file = request.files.get('files')
 
     if not input_file:
-        return jsonify({'error': 'CSV file is required'}), 400
+        return jsonify({'error': 'CSV file is required','status': 400}), 400
     
     try:
         stream = io.StringIO(input_file.stream.read().decode("UTF8"), newline=None)
         csv_input = csv.reader(stream)
 
         if not csv_input:
-            return jsonify({'error': 'CSV file is required'}), 400
+            return jsonify({'error': 'CSV file is required','status': 400}), 400
 
         applicants = extract_al_details([row for row in csv_input])  
         for applicant in applicants:
@@ -327,11 +327,11 @@ def create_bulk_import_al():
 
             db.session.commit()
     except ValidationError as e:
-        return jsonify({'error': str(e)}), 400
+        return jsonify({'error': str(e),'status': 400}), 400
         pass
     except exc.IntegrityError as e:
         db.session().rollback()
-        return jsonify({'error' : str(e.args)}), 400
+        return jsonify({'error' : str(e.args),'status': 400}), 400
         pass
     
-    return jsonify({'message' : 'Bulk import succeeded!'}), 200
+    return jsonify({'message' : 'Bulk import succeeded!','status': 200}), 200

@@ -40,16 +40,12 @@ def create_app():
     # add CORS support
     CORS(app)
 
-    # Authentication 
+    # Authentication
     app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY')
 
     # Database
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS')
-
-    # JWT Token expire
-    app.config['JWT_VERIFY_EXPIRATION'] = os.getenv('JWT_VERIFY_EXPIRATION')
-    app.config['JWT_EXPIRATION_DELTA'] =  datetime.timedelta(seconds=86400)
 
     # Request Validator
     JSONSchemaValidator(app=app, root="schemas/validations")

@@ -21,4 +21,4 @@ roles_schema = RoleSchema(many=True)
 @jwt_required
 def get_roles():
     users = Role.query.all()
-    return {'data': roles_schema.dump(users)}, 200
+    return {'data': roles_schema.dump(users),'status': 200}, 200
