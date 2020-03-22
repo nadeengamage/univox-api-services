@@ -27,18 +27,19 @@ def add_claims_to_access_token(identity):
 @app.route('/auth', methods=['POST'])
 def authentication():
     if not request.is_json:
-        return jsonify({"error": "Missing JSON in request!"}), 400
+        return jsonify({"error": "Missing JSON in request!", "status": 400}), 400
 
     username = request.json.get('username', None)
     password = request.json.get('password', None)
     if not username:
-        return jsonify({"error": "Missing username parameter!"}), 400
+        return jsonify({"error": "Missing username parameter!", "status": 400}), 400
     if not password:
-        return jsonify({"error": "Missing password parameter!"}), 400
+        return jsonify({"error": "Missing password parameter!", "status": 400}), 400
 
     if not authenticate(username, password):
-        return jsonify({"error": "Invalid username or password!"}), 401
+        return jsonify({"error": "Invalid username or password!", "status": 401}), 401
 
     # Identity can be any data that is json serializable
-    access_token = create_access_token(identity=username)
+    expires = datetime.timedelta(days=1)
+    access_token = create_access_token(identity=username, expires_delta=expires)
     return jsonify(access_token=access_token), 200
