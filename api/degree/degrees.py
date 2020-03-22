@@ -22,7 +22,7 @@ degrees_schema = DegreeSchema(many=True)
 @jwt_required
 def get_degrees():
     degrees = Degree.query.filter_by().all()
-    return {'data': degrees_schema.dump(degrees)}, 200
+    return {'data': degrees_schema.dump(degrees),'status': 200}, 200
 
 # get by id
 @app.route('/degrees/<code>', methods=['GET'])
@@ -31,9 +31,9 @@ def get_degree_by_code(code):
     degree = Degree.query.filter_by(degree_code=code).first()
 
     if not degree:
-        return {'message': 'Data not found!'}, 200    
+        return {'message': 'Data not found!','status': 404}, 404    
 
-    return {'data': degree_schema.dump(degree)}, 200
+    return {'data': degree_schema.dump(degree),'status': 200}, 200
 
 # create an degree
 @app.route('/degrees', methods=['POST'])
@@ -45,7 +45,7 @@ def create_degree():
         faculty = Faculty.query.filter_by(faculty_code=payload['faculty_code']).first()
 
         if not faculty:
-            return {'message': 'Faculty data not found!'}, 200 
+            return {'message': 'Faculty data not found!','status': 404}, 404 
 
         degree =  Degree(
                     faculty_id = faculty.id,
@@ -57,10 +57,10 @@ def create_degree():
         db.session.commit()
     except exc.IntegrityError:
         db.session().rollback()
-        return jsonify({'error' : 'Degree already exists!'}), 400
+        return jsonify({'error' : 'Degree already exists!','status': 400}), 400
         pass
 
-    return jsonify({'message' : 'New degree has created!'}), 200
+    return jsonify({'message' : 'New degree has created!','status': 200}), 200
 
 # update an degree
 @app.route('/degrees/<code>', methods=['PUT'])
@@ -69,7 +69,7 @@ def update_degree(code):
     degree = Degree.query.filter_by(degree_code=code).first()
     
     if not degree: 
-        return {'message': 'Data not found!'}, 200 
+        return {'message': 'Data not found!','status': 404}, 404 
     else:
         payload = request.get_json()
 
@@ -87,11 +87,11 @@ def update_degree(code):
             db.session.commit()
         except exc.IntegrityError:
             db.session().rollback()
-            return jsonify({'error' : 'Something error!'}), 400
+            return jsonify({'error' : 'Something error!','status': 400}), 400
             pass
         
 
-    return jsonify({'message' : 'Degree has been updated!'}), 200
+    return jsonify({'message' : 'Degree has been updated!','status': 200}), 200
 
 # delete degree
 @app.route('/degrees/<code>', methods=['DELETE'])
@@ -99,14 +99,14 @@ def update_degree(code):
 def delete_degree(code):
     degree = Degree.query.filter_by(degree_code=code.upper()).first()
     if not degree: 
-        return {'message': 'Data not found!'}, 200 
+        return {'message': 'Data not found!','status': 404}, 404 
     else:
         try:
             db.session.delete(degree)
             db.session.commit()
         except exc.IntegrityError:
             db.session().rollback()
-            return jsonify({'error' : 'Something error!'}), 400
+            return jsonify({'error' : 'Something error!','status': 400}), 400
             pass
 
-    return jsonify({'message' : 'Degree has been deleted!'}), 200
+    return jsonify({'message' : 'Degree has been deleted!','status': 200}), 200

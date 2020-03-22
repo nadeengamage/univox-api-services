@@ -22,7 +22,7 @@ faculties_schema = FacultySchema(many=True)
 @jwt_required
 def get_faculties():
     faculties = Faculty.query.filter_by().all()
-    return {'data': faculties_schema.dump(faculties)}, 200
+    return {'data': faculties_schema.dump(faculties),'status': 200}, 200
 
 # get by id
 @app.route('/faculties/<code>', methods=['GET'])
@@ -30,14 +30,14 @@ def get_faculties():
 def get_faculty_by_code(code):
 
     if not code: 
-        return {'message': 'Faculty code is required!'}, 200 
+        return {'message': 'Faculty code is required!','status': 400}, 400 
         
     faculty = Faculty.query.filter_by(faculty_code=code.upper()).first()
 
     if not faculty:
-        return {'message': 'Data not found!'}, 200    
+        return {'message': 'Data not found!','status': 404}, 404    
 
-    return {'data': faculty_schema.dump(faculty)}, 200
+    return {'data': faculty_schema.dump(faculty),'status': 200}, 200
 
 # create an faculty
 @app.route('/faculties', methods=['POST'])
@@ -55,10 +55,10 @@ def create_faculty():
         db.session.commit()
     except exc.IntegrityError:
         db.session().rollback()
-        return jsonify({'error' : 'Faculty already exists!'}), 400
+        return jsonify({'error' : 'Faculty already exists!','status': 400}), 400
         pass
 
-    return jsonify({'message' : 'New faculty has created!'}), 200
+    return jsonify({'message' : 'New faculty has created!','status': 200}), 200
 
 # update an faculty
 @app.route('/faculties/<code>', methods=['PUT'])
@@ -66,12 +66,12 @@ def create_faculty():
 def update_faculty(code):
 
     if not code: 
-        return {'message': 'Faculty code is required!'}, 200 
+        return {'message': 'Faculty code is required!','status': 400}, 400 
 
     faculty = Faculty.query.filter_by(faculty_code=code.upper()).first()
     
     if not faculty: 
-        return {'message': 'Data not found!'}, 200 
+        return {'message': 'Data not found!','status': 404}, 404 
     else:
         payload = request.get_json()
 
@@ -85,11 +85,11 @@ def update_faculty(code):
             db.session.commit()
         except exc.IntegrityError:
             db.session().rollback()
-            return jsonify({'error' : 'Something error!'}), 400
+            return jsonify({'error' : 'Something error!','status': 400}), 400
             pass
         
 
-    return jsonify({'message' : 'faculty has been updated!'}), 200
+    return jsonify({'message' : 'faculty has been updated!','status': 200}), 200
 
 # delete faculty
 @app.route('/faculties/<code>', methods=['DELETE'])
@@ -97,18 +97,18 @@ def update_faculty(code):
 def delete_faculty(code):
 
     if not code: 
-        return {'message': 'Faculty code is required!'}, 200 
+        return {'message': 'Faculty code is required!','status': 400}, 400 
 
     faculty = Faculty.query.filter_by(faculty_code=code.upper()).first()
     if not faculty: 
-        return {'message': 'Data not found!'}, 200 
+        return {'message': 'Data not found!','status': 404}, 404 
     else:
         try:
             db.session.delete(faculty)
             db.session.commit()
         except exc.IntegrityError:
             db.session().rollback()
-            return jsonify({'error' : 'Something error!'}), 400
+            return jsonify({'error' : 'Something error!','status': 400}), 400
             pass
 
-    return jsonify({'message' : 'Faculty has been deleted!'}), 200
+    return jsonify({'message' : 'Faculty has been deleted!','status': 200}), 200

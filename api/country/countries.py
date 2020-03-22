@@ -20,4 +20,4 @@ countries_schema = CountrySchema(many=True)
 @jwt_required
 def get_countries():
     countries = Country.query.all()
-    return {'data': countries_schema.dump(countries)}, 200
+    return {'data': countries_schema.dump(countries),'status': 200}, 200
