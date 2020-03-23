@@ -8,8 +8,15 @@
 
 from app import ma
 from models import StdMarks
+from schemas.DegreeSchema import DegreeSchema
+from schemas.StudentSchema import StudentSchema
 
 class StdMarkSchema(ma.Schema):
-  class Meta:
-    model = StdMarks
-    fields = ('student_id', 'degree_id', 'marks', 'remark', 'status')
+
+	# Relation
+	degree = ma.Nested(DegreeSchema)
+	applicant = ma.Nested(StudentSchema)
+
+	class Meta:
+		model = StdMarks
+		fields = ('applicant', 'degree.degree_code', 'marks', 'remark', 'status')
