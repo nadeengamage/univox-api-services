@@ -23,6 +23,7 @@ def bootstrap(app, db):
     # from models import ALStudent
     # from models.Country import Country
     # from models.StdMarks import StdMarks
+    # from models.Permission import Permission
     # from models.Diploma import Diploma
     
     # db.create_all()

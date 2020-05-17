@@ -8,6 +8,9 @@
 """
 
 from app import app, db
+from models.User import User
+from models.Permission import Permission
+
 
 class Role(db.Model):
     __tablename__ = 'tbl_roles'
