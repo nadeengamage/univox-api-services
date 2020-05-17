@@ -62,17 +62,11 @@ def create_std_marks():
         else:
             return jsonify({'error' : 'Invalid student type!','status': 400}), 400
 
-        degree = Degree.query.filter_by(degree_code=payload['degree_code'].upper()).first()
-
-        if not degree:
-            return jsonify({'error' : 'Invalid degree code!','status': 400}), 400
-
         if not student:
             return jsonify({'error' : 'Invalid applicant number!','status': 400}), 400
 
         std_marks = StdMarks(
                     student_id = student.student_id,
-                    degree_id = degree.id,
                     marks = payload['marks'],
                     remark = payload['remark'],
                     status = 1,
@@ -81,27 +75,35 @@ def create_std_marks():
         db.session.commit()
     except exc.IntegrityError as e:
         db.session().rollback()
-        return jsonify({'error' : str(e.args),'status': 400}), 400
+        if '1062' in str(e.args):
+            return jsonify({'error' : 'Marks already entered!','status': 400}), 400
+        else:
+            return jsonify({'error' : str(e.args),'status': 400}), 400
         pass
 
     return jsonify({'message' : 'New Student Marks has created!','status': 200}), 200
 
 # update an student marks
-@app.route('/applicants/marks/<student_type>/<path:code>', methods=['PUT'])
+@app.route('/applicants/marks', methods=['PUT'])
 @jwt_required
-def update_std_marks(student_type, code):
+def update_std_marks():
+
+    payload = request.get_json()
+    student_type = payload['student_type'].upper()
+    application_no = payload['applicant_no'].upper()
 
     if student_type.upper() == "NVQ":
-        student = NVQStudent.query.filter_by(application_no=code.upper()).first()
+        student = NVQStudent.query.filter_by(application_no=application_no.upper()).first()
+        std_marks = StdMarks.query.filter_by(student_id=student.student_id).first()
     elif student_type.upper() == "AL":
-        student = ALStudent.query.filter_by(application_no=code.upper()).first()
+        student = ALStudent.query.filter_by(application_no=application_no.upper()).first()
+        std_marks = StdMarks.query.filter_by(student_id=student.student_id).first()
     else:
         return jsonify({'error' : 'Invalid student type!','status': 400}), 400
 
     if not student:
             return jsonify({'error' : 'Invalid applicant number!','status': 400}), 400
 
-    std_marks = StdMarks.query.filter_by(student_id=student.id).first()
     if not std_marks:
         return {'message': 'Data not found!','status': 404}, 404
     else:
