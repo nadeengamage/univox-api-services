@@ -75,7 +75,10 @@ def create_std_marks():
         db.session.commit()
     except exc.IntegrityError as e:
         db.session().rollback()
-        return jsonify({'error' : str(e.args),'status': 400}), 400
+        if '1062' in str(e.args):
+            return jsonify({'error' : 'Marks already entered!','status': 400}), 400
+        else:
+            return jsonify({'error' : str(e.args),'status': 400}), 400
         pass
 
     return jsonify({'message' : 'New Student Marks has created!','status': 200}), 200
