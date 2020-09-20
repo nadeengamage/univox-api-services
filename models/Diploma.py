@@ -3,7 +3,7 @@
     @email - warunanissanka44@gmail.com
     @project - UnivoX
 
-    Description - diploma Model.
+    Description - diploma Details.
 """
 
 from app import app, db

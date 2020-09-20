@@ -3,7 +3,7 @@
     @email - warunanissanka44@gmail.com
     @project - UnivoX
 
-    Description - District Model.
+    Description - District Details.
 """
 
 from app import db
