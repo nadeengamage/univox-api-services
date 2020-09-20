@@ -39,3 +39,6 @@ from api.student import marks
 
 # Diploma
 from api.diploma import diplomas
+
+#Report
+from api.report import reports
