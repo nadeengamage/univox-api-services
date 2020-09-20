@@ -44,7 +44,8 @@ def get_report_data():
         # else:
         #     return jsonify({'error' : 'Invalid student type!'}), 400
 
-        service.generate_nvq_report()
+        # service.generate_nvq_report()
+        service.generate_al_report()
 
     except ValidationError as e:
         return jsonify({'error': str(e)}), 400
