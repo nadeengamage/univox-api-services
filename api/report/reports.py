@@ -3,7 +3,7 @@
     @email - warunanissanka44@gmail.com
     @project - UnivoX
 
-    Description - diploma Controller.
+    Description - Report Controller.
 """
 
 from app import app, db
@@ -62,7 +62,7 @@ def get_report_data():
             service.generate_nvq_report("B2", 'get_jwt_identity()')
 
             # fetch generated data by the degree code
-            applicants = service.get_applicants_b2_with_degree_code(criteria.btch_one_stud_per_program)
+            applicants = service.get_applicants_b2_with_degree_code(criteria.btch_two_stud_per_program)
 
         else:
             return jsonify({'error' : 'Invalid Batch Type!'}), 400
