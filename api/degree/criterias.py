@@ -61,6 +61,7 @@ def create_criteria():
                     second_exam_paper_mark = payload['second_exam_paper_mark'],
                     btch_one_cut_off_mark = payload['btch_one_cut_off_mark'],
                     btch_two_cut_off_mark = payload['btch_two_cut_off_mark'],
+                    crt_btch_one_al_cut_off_mark = payload['crt_btch_one_al_cut_off_mark'],
                     status = 1,
                     created_by = get_jwt_identity())
         db.session.add(criteria)
@@ -96,6 +97,7 @@ def update_criteria(code):
                 criteria.second_exam_paper_mark = payload['second_exam_paper_mark']
                 criteria.btch_one_cut_off_mark = payload['btch_one_cut_off_mark']
                 criteria.btch_two_cut_off_mark = payload['btch_two_cut_off_mark']
+                criteria.crt_btch_one_al_cut_off_mark = payload['crt_btch_one_al_cut_off_mark']
                 criteria.status = payload['status']
                 criteria.updated_by = get_jwt_identity()
 
