@@ -21,6 +21,7 @@ class Criteria(db.Model):
     second_exam_paper_mark = db.Column('crt_second_exam_paper_mark', db.String(10), primary_key=True)
     btch_one_cut_off_mark = db.Column('crt_btch_one_cut_off_mark', db.String(10), primary_key=True)
     btch_two_cut_off_mark = db.Column('crt_btch_two_cut_off_mark', db.String(10), primary_key=True)
+    crt_btch_one_al_cut_off_mark = db.Column('crt_btch_one_al_cut_off_mark', db.Float, nullable=False)
     status = db.Column(db.Boolean)
     created_by = db.Column(db.String(50))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
