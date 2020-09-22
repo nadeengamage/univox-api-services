@@ -14,6 +14,9 @@ from schemas.DegreeSchema import DegreeSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import exc
 
+import re
+
+
 degree_schema = DegreeSchema()
 degrees_schema = DegreeSchema(many=True)
 
@@ -85,7 +88,12 @@ def update_degree(code):
 
             db.session.add(degree)
             db.session.commit()
-        except exc.IntegrityError:
+        except exc.IntegrityError as e:
+            duplicate = re.search("1062.*Duplicate entry", str(e))    
+            
+            if duplicate:
+                return jsonify({'error' : 'Duplicate Degree Code or Name found!','status': 400}), 400
+
             db.session().rollback()
             return jsonify({'error' : 'Something error!','status': 400}), 400
             pass
@@ -104,7 +112,12 @@ def delete_degree(code):
         try:
             db.session.delete(degree)
             db.session.commit()
-        except exc.IntegrityError:
+        except exc.IntegrityError as e:
+            cascade = re.search("1048", str(e))
+
+            if cascade:
+                return jsonify({'error' : 'You cannot delete this master record because a matching detailed record exists!','status': 400}), 400
+                
             db.session().rollback()
             return jsonify({'error' : 'Something error!','status': 400}), 400
             pass
