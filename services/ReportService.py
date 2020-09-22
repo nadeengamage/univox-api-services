@@ -76,6 +76,7 @@ class ReportService:
         data = {'degree_code': degree, 'applicants_count': applicants_count}
         sql = text("SELECT tbl_student_al_details.std_application_no , tbl_temp_al.deg_degree_code , tbl_temp_al.batch_type ,tbl_students.std_identity_no ,tbl_students.std_student_type ,tbl_students.std_initials ,tbl_students.std_surename ,tbl_students.std_title ,tbl_students.std_gender ,tbl_students.std_address_1 ,tbl_students.std_address_2 ,tbl_students.std_address_3 ,tbl_students.std_district , tbl_temp_al.student_marks ,tbl_students.std_telephone ,tbl_temp_al.preferance_type FROM UnivoxDB.tbl_student_al_details INNER JOIN UnivoxDB.tbl_students ON (tbl_student_al_details.std_al_student_id = tbl_students.id) INNER JOIN UnivoxDB.tbl_temp_al ON (tbl_temp_al.student_id = tbl_student_al_details.std_al_student_id) WHERE deg_degree_code = :degree_code ORDER BY student_marks DESC, preferance_type ASC LIMIT :applicants_count")
         return db.engine.execute(sql, data)
+        
 
     def get_nvq_al_applicants_by_degree_code(self, nvq_applicants_count, al_applicants_count, degree, batch_type):
         data = {'nvq_applicants_count': nvq_applicants_count, 'al_applicants_count': al_applicants_count, 'degree_code': degree}

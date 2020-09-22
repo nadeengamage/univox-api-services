@@ -14,6 +14,9 @@ from schemas.FacultySchema import FacultySchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import exc
 
+import re
+
+
 faculty_schema = FacultySchema()
 faculties_schema = FacultySchema(many=True)
 
@@ -76,14 +79,19 @@ def update_faculty(code):
         payload = request.get_json()
 
         try:
-            Faculty.faculty_code = payload['faculty_code'].upper()
-            Faculty.faculty_name = payload['faculty_name']
-            Faculty.status = payload['status']
-            Faculty.updated_by = get_jwt_identity()
+            faculty.faculty_code = payload['faculty_code'].upper()
+            faculty.faculty_name = payload['faculty_name']
+            faculty.status = payload['status']
+            faculty.updated_by = get_jwt_identity()
 
             db.session.add(faculty)
             db.session.commit()
-        except exc.IntegrityError:
+        except exc.IntegrityError as e:
+            duplicate = re.search("1062.*Duplicate entry", str(e))
+            
+            if duplicate:
+                return jsonify({'error' : 'Duplicate Faculty Code or Name found!','status': 400}), 400
+
             db.session().rollback()
             return jsonify({'error' : 'Something error!','status': 400}), 400
             pass
@@ -106,7 +114,11 @@ def delete_faculty(code):
         try:
             db.session.delete(faculty)
             db.session.commit()
-        except exc.IntegrityError:
+        except exc.IntegrityError as e:
+            cascade = re.search("1048", str(e))
+            if cascade:
+                return jsonify({'error' : 'You cannot delete this master record because a matching detailed record exists!','status': 400}), 400
+
             db.session().rollback()
             return jsonify({'error' : 'Something error!','status': 400}), 400
             pass
