@@ -15,6 +15,9 @@ from schemas.CriteriaSchema import CriteriaSchema
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import exc
 
+import re
+
+
 criteria_schema = CriteriaSchema()
 criterias_schema = CriteriaSchema(many=True)
 
@@ -103,7 +106,12 @@ def update_criteria(code):
 
                 db.session.add(criteria)
                 db.session.commit()
-            except exc.IntegrityError:
+            except exc.IntegrityError as e:
+                duplicate = re.search("1062.*Duplicate entry", str(e))
+            
+                if duplicate:
+                    return jsonify({'error' : 'Duplicate record found!','status': 400}), 400
+
                 db.session().rollback()
                 return jsonify({'error' : 'Something error!','status': 400}), 400
                 pass
@@ -124,11 +132,14 @@ def delete_criteria(code):
             return {'message': 'Data not found!','status': 404}, 404 
         else:
             try:
-                criteria.status = 0
-                criteria.updated_by = get_jwt_identity()
-                db.session.add(criteria)
+                db.session.delete(criteria)
                 db.session.commit()
-            except exc.IntegrityError:
+            except exc.IntegrityError as e:
+                cascade = re.search("1048", str(e))
+
+                if cascade:
+                    return jsonify({'error' : 'You cannot delete this master record because a matching detailed record exists!','status': 400}), 400
+                
                 db.session().rollback()
                 return jsonify({'error' : 'Something error!','status': 400}), 400
                 pass

@@ -17,6 +17,8 @@ from services.extractor import extract_nvq_details, extract_al_details, validate
 from exceptions.validations import ValidationError
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy import exc
+
+import re
 import io
 import csv
 
@@ -118,6 +120,11 @@ def create_applicant():
         db.session().rollback()
         return jsonify({'error': str(e),'status': 400}), 400
     except exc.IntegrityError as e:
+        duplicate = re.search("1062.*Duplicate entry", str(e))
+            
+        if duplicate:
+            return jsonify({'error' : 'Duplicate record found with given NIC!','status': 400}), 400
+
         db.session().rollback()
         return jsonify({'error' : str(e.args),'status': 400}), 400
 

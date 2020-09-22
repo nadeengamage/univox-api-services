@@ -136,8 +136,8 @@ def delete_std_marks(student_type, code):
         student = ALStudent.query.filter_by(application_no=code.upper()).first()
     else:
         return jsonify({'error' : 'Invalid student type!','status': 400}), 400
-
-    std_marks = StdMarks.query.filter_by(student_id=student.id).first()
+    
+    std_marks = StdMarks.query.filter_by(student_id=student.student_id).first()
     if not std_marks:
         return {'message': 'Data not found!','status': 404}, 404
     else:
