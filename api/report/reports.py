@@ -69,7 +69,7 @@ def get_report_data():
             service.generate_nvq_report("B2", get_jwt_identity())
 
             # fetch generated data by the degree code
-            result = service.get_applicants_b2_with_degree_code((criteria.btch_two_stud_per_program + BUFFER), degree.degree_code)
+            result = service.get_nvq_applicants_by_degree_code((criteria.btch_two_stud_per_program + BUFFER), degree.degree_code)
             return jsonify({'message' : 'NVQ', 'result': [dict(row) for row in result]}), 200
 
         else:
